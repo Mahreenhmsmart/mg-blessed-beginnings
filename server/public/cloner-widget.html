@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website Cloner Widget</title>
+  <style>
+    /* Self-contained styles — no external dependencies */
+    .cloner-widget {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 600px;
+      color: #fafafa;
+      line-height: 1.6;
+    }
+    .cloner-widget *, .cloner-widget *::before, .cloner-widget *::after {
+      box-sizing: border-box;
+    }
+    .cloner-widget h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #fafafa;
+    }
+    .cloner-widget .subtitle {
+      font-size: 0.875rem;
+      color: #a1a1aa;
+      margin-bottom: 1.25rem;
+    }
+    .cloner-form {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .cloner-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #3f3f46;
+      background: #09090b;
+      color: #fafafa;
+      font-size: 0.9375rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .cloner-input:focus {
+      border-color: #818cf8;
+    }
+    .cloner-input::placeholder {
+      color: #71717a;
+    }
+    .cloner-btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+    .cloner-btn:hover {
+      opacity: 0.9;
+    }
+    .cloner-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .cloner-status {
+      margin-top: 1rem;
+    }
+    .cloner-loading {
+      padding: 1rem;
+      border-radius: 8px;
+      background: rgba(99, 102, 241, 0.1);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      color: #818cf8;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+    }
+    .cloner-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #3f3f46;
+      border-top-color: #818cf8;
+      border-radius: 50%;
+      animation: cloner-spin 0.8s linear infinite;
+    }
+    @keyframes cloner-spin {
+      to { transform: rotate(360deg); }
+    }
+    .cloner-result {
+      padding: 1rem;
+      border-radius: 8px;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .cloner-result h3 {
+      color: #22c55e;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .cloner-result-url {
+      font-size: 0.8125rem;
+      color: #a1a1aa;
+      word-break: break-all;
+    }
+    .cloner-result-meta {
+      font-size: 0.75rem;
+      color: #71717a;
+      margin-top: 0.25rem;
+    }
+    .cloner-links {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    .cloner-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.8125rem;
+      transition: opacity 0.2s;
+    }
+    .cloner-link:hover {
+      opacity: 0.9;
+    }
+    .cloner-link-preview {
+      background: #6366f1;
+      color: white;
+    }
+    .cloner-link-download {
+      background: transparent;
+      border: 1px solid #3f3f46;
+      color: #a1a1aa;
+    }
+    .cloner-error {
+      padding: 1rem;
+      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+      font-size: 0.875rem;
+    }
+    @media (max-width: 480px) {
+      .cloner-form {
+        flex-direction: column;
+      }
+      .cloner-widget {
+        padding: 1rem;
+      }
+      .cloner-widget h2 {
+        font-size: 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body style="background: #0f0f11; padding: 2rem; margin: 0;">
+
+<!-- 
+  MG Website Cloner Widget
+  
+  To embed this widget in your website:
+  1. Copy everything from <div class="cloner-widget"> to its closing </div>
+  2. Paste it wherever you want the widget to appear
+  3. Update CLONER_BACKEND_URL below to point to your backend
+  
+  The widget is fully self-contained — all CSS is inline, no external dependencies.
+-->
+
+<div class="cloner-widget">
+  <h2>Clone a Website</h2>
+  <p class="subtitle">Enter a URL to create a single-file visual clone. Styles are inlined, images embedded, scripts removed.</p>
+  
+  <form class="cloner-form" id="clonerForm">
+    <input 
+      type="url" 
+      class="cloner-input" 
+      id="clonerUrlInput" 
+      placeholder="https://example.com" 
+      required 
+    />
+    <button type="submit" class="cloner-btn" id="clonerBtn">Clone</button>
+  </form>
+  
+  <div class="cloner-status" id="clonerStatus"></div>
+</div>
+
+<script>
+(function() {
+  // ═══════════════════════════════════════════════════════════════
+  // CONFIGURATION — Change this to your backend URL
+  // ═══════════════════════════════════════════════════════════════
+  const CLONER_BACKEND_URL = 'http://localhost:4600';
+  // ═══════════════════════════════════════════════════════════════
+
+  const form = document.getElementById('clonerForm');
+  const urlInput = document.getElementById('clonerUrlInput');
+  const btn = document.getElementById('clonerBtn');
+  const statusDiv = document.getElementById('clonerStatus');
+
+  function formatBytes(bytes) {
+    if (bytes === 0) return '0 B';
+    const sizes = ['B', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+  }
+
+  function formatDate(dateStr) {
+    try {
+      return new Date(dateStr).toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+    } catch {
+      return dateStr;
+    }
+  }
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const url = urlInput.value.trim();
+    if (!url) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Cloning...';
+    statusDiv.innerHTML = '<div class="cloner-loading"><div class="cloner-spinner"></div>Cloning... this may take a few seconds.</div>';
+
+    try {
+      const res = await fetch(CLONER_BACKEND_URL + '/api/clone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url }),
+      });
+      
+      const data = await res.json();
+
+      if (res.ok && data.id) {
+        statusDiv.innerHTML = 
+          '<div class="cloner-result">' +
+            '<h3>Clone successful!</h3>' +
+            '<div class="cloner-result-url">' + escapeHtml(data.source) + '</div>' +
+            '<div class="cloner-result-meta">' + formatBytes(data.bytes) + ' · ' + formatDate(data.createdAt) + '</div>' +
+            '<div class="cloner-links">' +
+              '<a href="' + CLONER_BACKEND_URL + '/api/clone/' + data.id + '/preview" target="_blank" class="cloner-link cloner-link-preview">Preview</a>' +
+              '<a href="' + CLONER_BACKEND_URL + '/api/clone/' + data.id + '/download" class="cloner-link cloner-link-download">Download</a>' +
+            '</div>' +
+          '</div>';
+      } else {
+        statusDiv.innerHTML = '<div class="cloner-error">' + escapeHtml(data.error || 'Failed to clone website.') + '</div>';
+      }
+    } catch (err) {
+      statusDiv.innerHTML = '<div class="cloner-error">Network error. Please check that the backend is running at ' + escapeHtml(CLONER_BACKEND_URL) + '</div>';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Clone';
+    }
+  });
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+  }
+})();
+</script>
+
+</body>
+</html>

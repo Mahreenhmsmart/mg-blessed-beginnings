@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /login
+Disallow: /signup
+Disallow: /card-payment
+Disallow: /subscription-success
+Disallow: /subscription-cancel
+Disallow: /ad-payment-success
+Disallow: /ad-payment-cancel
+Disallow: /ad-dashboard
+Disallow: /api/
+
+Sitemap: https://mgblessed.icod.ai/sitemap.xml

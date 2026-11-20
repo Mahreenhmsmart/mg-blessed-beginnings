@@ -1,0 +1,45 @@
+/*
+!/client
+!/server
+!/ecosystem.config.js
+!/.gitignore
+!/.env.example
+
+# Environment files
+.env
+.env.local
+.env.production
+client/.env
+client/.env.local
+client/.env.production
+server/.env
+server/.env.local
+server/.env.production
+
+# Dependencies
+client/node_modules/
+server/node_modules/
+
+# Lock files (optional — include if reproducible builds aren't needed)
+client/package-lock.json
+server/package-lock.json
+
+# Build output
+client/build/
+client/dist/
+
+# Uploads content (keep directory, ignore files)
+server/uploads/*
+!server/uploads/.gitkeep
+
+# Security scanner reports (generated at runtime)
+server/security-scanner/reports/*
+!server/security-scanner/reports/README.md
+
+# Python cache and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/

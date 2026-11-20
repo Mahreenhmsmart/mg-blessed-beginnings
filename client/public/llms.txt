@@ -1,0 +1,80 @@
+# MG Blessed Beginnings — AI-Powered Business Growth Platform
+
+> A collection of free AI-powered tools designed for e-commerce sellers,
+> online business owners, and digital entrepreneurs. Built with AI-first
+> SEO, AEO, and GEO best practices.
+
+## AI Tools
+
+### Product Description Generator
+- URL: https://mgblessed.icod.ai/tools/product-description-generator
+- Description: Generate compelling, SEO-friendly product descriptions for any e-commerce platform using AI.
+- Features: Multi-platform support (Shopify, eBay, Etsy), Tone customization, SEO keyword integration, Bulk generation capability
+
+### SEO Title Optimizer
+- URL: https://mgblessed.icod.ai/tools/seo-title-optimizer
+- Description: Optimize your product titles for maximum search visibility across all major platforms.
+- Features: Keyword density analysis, Character limit compliance, Platform-specific formatting, Competitor comparison
+
+### Hashtag Generator
+- URL: https://mgblessed.icod.ai/tools/hashtag-generator
+- Description: Generate relevant, trending hashtags for social media posts to increase reach and engagement.
+- Features: Trending hashtag detection, Niche-specific suggestions, Engagement rate predictions, Platform optimization
+
+### Profit Calculator
+- URL: https://mgblessed.icod.ai/tools/profit-calculator
+- Description: Calculate profit margins, ROI, and optimal pricing for your products with instant math-based results.
+- Features: Instant cost breakdown, Profit margin calculation, ROI analysis, Marketplace fee support
+
+### Competitor Analyzer
+- URL: https://mgblessed.icod.ai/tools/competitor-analyzer
+- Description: AI-powered framework that generates competitor analysis insights based on your input. Provides structured guidance rather than live data scraping.
+- Features: AI-generated competitive insights, Pricing comparison framework, Listing quality scoring guide, Gap analysis template
+
+### Review Response Writer
+- URL: https://mgblessed.icod.ai/tools/review-response-writer
+- Description: Generate professional, personalized responses to customer reviews quickly and effectively.
+- Features: Sentiment analysis, Response templates, Brand voice matching, Multi-language support
+
+### Listing Optimizer
+- URL: https://mgblessed.icod.ai/tools/listing-optimizer
+- Description: Comprehensive listing optimization tool that generates SEO titles, improved descriptions, keywords, selling points, and actionable improvement suggestions.
+- Features: SEO title optimization, Description rewriting, Keyword & tag suggestions, Selling point extraction, Improvement recommendations
+
+### Social Media Studio
+- URL: https://mgblessed.icod.ai/tools/social-media-studio
+- Description: Create engaging social media content for Instagram, TikTok, Facebook, LinkedIn, and Twitter with AI-generated captions, hooks, hashtags, and variations.
+- Features: Multi-platform support, Tone customization, Platform-aware formatting, Hashtag generation, Content variations for A/B testing
+
+### Branding Assistant
+- URL: https://mgblessed.icod.ai/tools/branding-assistant
+- Description: Generate brand name suggestions, taglines, color palettes, and brand voice guidelines to establish a cohesive brand identity.
+- Features: Brand name suggestions, Tagline generation, Color palette ideas, Brand voice guidelines
+
+### Prompt Library
+- URL: https://mgblessed.icod.ai/prompt-library
+- Description: Curated collection of proven prompts for AI tools. Copy ready-to-use prompts for product descriptions, marketing copy, SEO, and more.
+- Features: Pre-written prompt templates, Category organization, One-click copy, Regular updates
+
+### Listing Health Score
+- URL: https://mgblessed.icod.ai/tools/listing-health-score
+- Description: AI-powered listing audit that scores your product listing out of 100 across SEO, description quality, keyword coverage, pricing, and trust signals — with ranked fixes and quick wins.
+- Features: Overall health score out of 100, Sub-score breakdown across 5 categories, Ranked list of specific fixes by impact, Quick-win highlights for instant improvements
+
+### Keyword Research Tool
+- URL: https://mgblessed.icod.ai/tools/keyword-research
+- Description: Discover high-potential keywords with estimated search volume, competition levels, and content ideas tailored to your target marketplace.
+- Features: Marketplace-aware keyword analysis, Search volume & competition estimates, Primary & secondary keyword recommendations, Content & listing idea suggestions
+
+### AI Video Generator
+- URL: https://mgblessed.icod.ai/video-generator
+- Description: Generate stunning videos from text descriptions using Luma AI Dream Machine. Create product demos, social media clips, and visual content with AI.
+- Features: Text-to-video generation, Image-to-video animation, Multiple aspect ratios, High-quality output
+
+## About
+
+MG Blessed Beginnings provides free AI-powered business tools for e-commerce sellers, online entrepreneurs, and digital marketers. Our mission is to democratize access to AI technology so businesses of all sizes can compete effectively in the digital marketplace.
+
+All tools are free to use with no account required. We believe in empowering sellers with professional-grade AI tools that were previously only available to large enterprises.
+
+Learn more: https://mgblessed.icod.ai

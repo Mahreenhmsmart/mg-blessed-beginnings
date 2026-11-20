@@ -1,0 +1,15 @@
+export { default as HomepageHero } from './HomepageHero';
+export { default as BusinessJourney } from './BusinessJourney';
+export { default as AIBusinessToolkit } from './AIBusinessToolkit';
+export { default as AppScreenshots } from './AppScreenshots';
+export { default as BuildJourney } from './BuildJourney';
+export { default as BusinessSimulator } from './BusinessSimulator';
+export { default as WhyMG } from './WhyMG';
+export { default as FounderTrust } from './FounderTrust';
+export { default as FinalCTA } from './FinalCTA';
+export { default as ShopDigitalProducts } from './ShopDigitalProducts';
+export { default as PromoVideo } from './PromoVideo';
+export { default as FreeResources } from './FreeResources';
+export { default as ClientReviews } from './ClientReviews';
+export { default as CoursesShowcase } from './CoursesShowcase';
+export { default as MarqueeBanner } from './MarqueeBanner';

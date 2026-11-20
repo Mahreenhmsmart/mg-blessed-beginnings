@@ -1,0 +1,6 @@
+# MG Security Scanner Requirements
+# Core dependencies
+requests>=2.28.0
+
+# DNS resolution (optional — falls back to socket.gethostbyname if not installed)
+dnspython>=2.3.0

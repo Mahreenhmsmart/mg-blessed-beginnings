@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Title, description, OG, Twitter, canonical, and JSON-LD are injected server-side by seoMetaMiddleware -->
+    <!-- react-helmet-async takes over after hydration for client-side navigation -->
+    <!-- No static <title> or structured data here to avoid duplicates with server injection -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#7662C7" />
+    <!-- Prevent stale HTML caching — ensures browsers always fetch fresh index.html -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <!-- Preload critical resources -->
+    <link rel="preload" as="image" href="https://drive.google.com/thumbnail?id=1XL3rD1O3DxZ1478Rx8VIcmzSd7KyJEhS&sz=w1920" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://drive.google.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Structured data is injected server-side by seoMetaMiddleware and client-side by SchemaInjector -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

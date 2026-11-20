@@ -1,0 +1,60 @@
+Build a Website Cloner feature for my Node.js application.
+
+## Feature Description
+
+I need a tool that creates single-file visual clones of public websites. When a user provides a URL, the system should:
+
+1. Fetch the target page's HTML
+2. Inline all external CSS stylesheets (fetch each CSS file and embed it in <style> tags)
+3. Embed small images (<50KB) as base64 data URIs
+4. Remove ALL <script> tags for security
+5. Strip inline event handlers (onclick, onload, onerror, etc.)
+6. Rewrite relative URLs to absolute URLs pointing to the original site
+7. Optionally inject a promotional banner
+
+The output must be a SINGLE self-contained HTML file that shows a visual replica when opened in a browser.
+
+## Technical Requirements
+
+- Backend is MANDATORY — browsers block cross-origin HTML fetching (CORS), so cloning cannot happen client-side
+- Use Node.js 20+ built-in fetch (no axios or node-fetch needed)
+- Zero external dependencies for the core cloning engine
+- Block localhost and private IP addresses (security)
+- Maximum page size: 3 MB
+- Fetch timeout: 15 seconds per request
+- Store clones with a 7-day TTL
+
+## API Endpoints Needed
+
+```
+POST /api/cloner/clone      — Body: { "url": "https://..." } → Returns { id, source, bytes, createdAt }
+GET  /api/cloner/clones     — List recent clones
+GET  /api/cloner/preview/:id — Serve clone HTML for preview
+GET  /api/cloner/download/:id — Download clone as attachment
+```
+
+## Frontend Requirements
+
+- URL input field with validation
+- Loading state while cloning
+- Success result with preview and download links
+- Recent clones list
+- Informational notes explaining:
+  - This is a VISUAL clone only
+  - Buttons, logins, and shops won't work in clones
+  - Styles are inlined, images embedded, scripts removed
+  - Only clone sites you own or have permission for
+
+## Security Notes
+
+- The clone is visual-only — no JavaScript executes
+- All scripts are stripped from the output
+- Event handler attributes are removed
+- Localhost/private IPs are blocked
+- No cookies or session data is captured
+
+## Important Limitations to Display
+
+"Yeh visual clone hai: copied page ke button/login/shop kaam nahi karenge — peeche koi backend nahi hota. Backup, migration aur redesign ki shuruaat ke liye best hai."
+
+Please implement this following the existing project patterns (Express routes → controllers → services architecture, Mongoose for storage, React + TailwindCSS frontend).

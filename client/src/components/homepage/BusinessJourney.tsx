@@ -1,58 +1,40 @@
 import { cn } from '@/utils/cn';
 import { ArrowRight } from 'lucide-react';
 import { useInView } from '@/hooks/useInView';
+import { useHomepageSettings } from '@/hooks/useHomepageSettings';
 
 interface BusinessJourneyProps {
   className?: string;
 }
 
-const STEPS = [
-  {
-    number: '01',
-    title: 'Idea',
-    description: 'Start with your business concept and vision.',
-    image: 'https://drive.google.com/thumbnail?id=1k3WmsHuMpqqbg8xdgmOu9zSMt6Eor_KW&sz=w1920',
-    color: 'rgb(var(--warning))',
-  },
-  {
-    number: '02',
-    title: 'Research',
-    description: 'Validate your idea with AI-powered market analysis.',
-    image: 'https://drive.google.com/thumbnail?id=1IVpg0pK3-CcEsRr5ToOorYZXCwNzsF58&sz=w1920',
-    color: 'rgb(var(--primary))',
-  },
-  {
-    number: '03',
-    title: 'Brand',
-    description: 'Build a memorable brand identity that stands out.',
-    image: 'https://drive.google.com/thumbnail?id=1YEYQ-pE2am7XqQ_QIkbBnTw5ElabxDSg&sz=w1920',
-    color: 'rgb(var(--accent))',
-  },
-  {
-    number: '04',
-    title: 'Build',
-    description: 'Create products, listings, and your online store.',
-    image: 'https://drive.google.com/thumbnail?id=1xnTngt6v3z0_f3JUfpow6PDpGnJHibAI&sz=w1920',
-    color: 'rgb(var(--cyan))',
-  },
-  {
-    number: '05',
-    title: 'Market',
-    description: 'Generate content and strategies to attract customers.',
-    image: 'https://drive.google.com/thumbnail?id=1GArCQN7rfAhFL-gA6Z3lDr1EnJwx3vTL&sz=w1920',
-    color: 'rgb(var(--primary-hover))',
-  },
-  {
-    number: '06',
-    title: 'Grow',
-    description: 'Scale with data-driven insights and optimization.',
-    image: 'https://drive.google.com/thumbnail?id=1_JyJ320eU6sbd6wX0a3Fmzcf2RMF9s7I&sz=w1920',
-    color: 'rgb(var(--success))',
-  },
+const STEP_IMAGES = [
+  'https://drive.google.com/thumbnail?id=1k3WmsHuMpqqbg8xdgmOu9zSMt6Eor_KW&sz=w1920',
+  'https://drive.google.com/thumbnail?id=1IVpg0pK3-CcEsRr5ToOorYZXCwNzsF58&sz=w1920',
+  'https://drive.google.com/thumbnail?id=1YEYQ-pE2am7XqQ_QIkbBnTw5ElabxDSg&sz=w1920',
+  'https://drive.google.com/thumbnail?id=1xnTngt6v3z0_f3JUfpow6PDpGnJHibAI&sz=w1920',
+  'https://drive.google.com/thumbnail?id=1GArCQN7rfAhFL-gA6Z3lDr1EnJwx3vTL&sz=w1920',
+  'https://drive.google.com/thumbnail?id=1_JyJ320eU6sbd6wX0a3Fmzcf2RMF9s7I&sz=w1920',
+];
+
+const STEP_COLORS = [
+  'rgb(var(--warning))',
+  'rgb(var(--primary))',
+  'rgb(var(--accent))',
+  'rgb(var(--cyan))',
+  'rgb(var(--primary-hover))',
+  'rgb(var(--success))',
 ];
 
 export default function BusinessJourney({ className }: BusinessJourneyProps) {
   const { ref, isInView } = useInView({ threshold: 0.1, triggerOnce: true });
+  const { settings } = useHomepageSettings();
+
+  // Merge DB steps with static images/colors (images and colors are not editable)
+  const steps = settings.journeySteps.map((step, idx) => ({
+    ...step,
+    image: STEP_IMAGES[idx] || '',
+    color: STEP_COLORS[idx] || 'rgb(var(--primary))',
+  }));
 
   return (
     <section
@@ -119,7 +101,7 @@ export default function BusinessJourney({ className }: BusinessJourneyProps) {
           <div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-8 lg:gap-5"
             data-icod-id="src_components_homepage_businessjourney_tsx_14ee">
-            {STEPS.map((step, index) => (
+            {steps.map((step, index) => (
                 <div
                   key={step.number}
                   className="group relative flex flex-col items-center text-center rounded-2xl bg-card border border-border hover:border-primary/30 transition-all duration-500 hover:-translate-y-2 overflow-hidden"
@@ -172,7 +154,7 @@ export default function BusinessJourney({ className }: BusinessJourneyProps) {
                       data-icod-id={`src_components_homepage_businessjourney_tsx_387b_${step.number}`}>{step.description}</p>
                   </div>
                   {/* Mobile vertical connector with arrow */}
-                  {index < STEPS.length - 1 && (
+                  {index < steps.length - 1 && (
                     <div
                       className="lg:hidden absolute -bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center"
                       aria-hidden="true"

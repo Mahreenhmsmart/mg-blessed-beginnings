@@ -5,6 +5,7 @@ import { Card } from '@/components/ui';
 import { Award, Target, Globe, Mail, MapPin, Linkedin, Instagram, MessageCircle, Heart, Lightbulb, BookOpen, Youtube, ExternalLink } from 'lucide-react';
 import type { FAQItem } from '@/components/FAQAccordion';
 import { SchemaInjector, PAGE_META } from '@/seo';
+import { useSeo } from '@/components/Seo';
 import { getAboutContent } from '@/services/pageContentService';
 
 const aboutMeta = PAGE_META['/about'];
@@ -55,6 +56,10 @@ const aboutStructuredData = [
 ];
 
 export default function About() {
+  useSeo(
+    'About | MG Blessed Beginnings',
+    'About MG Blessed Beginnings and founder Mahreen Yousaf.',
+  );
   const content = getAboutContent();
   const BELIEF_ICONS = [Heart, Lightbulb, BookOpen];
 
@@ -103,9 +108,9 @@ export default function About() {
             </div>
             <div className="text-center md:text-left" data-icod-id="src_pages_about_tsx_hero_text">
               <img
-                src="https://drive.google.com/thumbnail?id=17_eHHL7Lgz4XxCm2NlcyhqW4PLEFUTxr&sz=w1920"
+                className="mg-logo"
+                src="/assets/1795177902729_mg-logo-new-transparent-upload.webp"
                 alt="MG Blessed Beginnings"
-                className="h-14 w-auto object-contain mb-4 mx-auto md:mx-0"
                 data-icod-id="src_pages_about_tsx_logo_img" />
               <h1
                 className="text-4xl md:text-5xl font-bold text-foreground mb-3 tracking-tight"

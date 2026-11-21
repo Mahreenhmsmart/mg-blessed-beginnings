@@ -72,7 +72,7 @@ export default function AppScreenshots({ className }: AppScreenshotsProps) {
           <VideoEmbed
             src="https://drive.google.com/file/d/1M57RHp2dMod2H-rm-EkXLizazB5s9xab/preview"
             title="AI-Powered Business Toolkit"
-            description="Access 15 free AI tools for content, SEO, and eCommerce in one dashboard."
+            description="Access 14 free AI tools for content, SEO, and eCommerce in one dashboard."
             className="w-full"
             data-icod-id="src_components_homepage_appscreenshots_tsx_99aa" />
           <VideoEmbed

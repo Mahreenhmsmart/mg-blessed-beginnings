@@ -11,6 +11,11 @@ import Ad from './models/Ad';
 import Project from './models/Project';
 import Audit from './models/Audit';
 import Product from './models/Product';
+import Founder from './models/Founder';
+import HomepageSettings from './models/HomepageSettings';
+import Portfolio from './models/Portfolio';
+import ThirtyDayPlan from './models/ThirtyDayPlan';
+import Clone from './models/Clone';
 import { DEMO_USERS } from './config/demoUsers';
 
 export async function seedData(): Promise<void> {
@@ -66,7 +71,7 @@ export async function seedData(): Promise<void> {
       author: 'Mahreen Yousaf',
       category: 'Shopify',
       tags: ['shopify', 'e-commerce', 'tips', 'conversion'],
-      featuredImage: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a07d?w=800&h=450&fit=crop&q=80',
+      featuredImage: 'https://drive.google.com/thumbnail?id=1UHwOPcPQmi158da9Fz1sZ-twBXUycSzR&sz=w800',
       publishedAt: new Date('2026-01-10T09:00:00Z'),
       status: 'published',
     },
@@ -1223,7 +1228,7 @@ export async function seedData(): Promise<void> {
       author: 'Mahreen Yousaf',
       category: 'E-commerce',
       tags: ['etsy', 'ebay', 'shopify', 'comparison', 'marketplace'],
-      featuredImage: 'https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?w=800&h=450&fit=crop',
+      featuredImage: 'https://drive.google.com/thumbnail?id=1y7vuTbCYjc19vYcp6SUD4GR2rXeMeL6o&sz=w800',
       publishedAt: new Date('2025-11-05T09:00:00Z'),
       status: 'published',
     },
@@ -1936,7 +1941,7 @@ export async function seedData(): Promise<void> {
       ],
       toolUrl: '/tools/listing-health-score',
       isFree: true,
-      status: 'live' as const,
+      status: 'coming_soon' as const,
     },
     {
       name: 'Keyword Research Tool',
@@ -1967,7 +1972,7 @@ export async function seedData(): Promise<void> {
       ],
       toolUrl: '/tools/brand-campaign-studio',
       isFree: true,
-      status: 'coming_soon' as const,
+      status: 'live' as const,
     },
     {
       name: 'SEO & Backlink Studio',
@@ -2000,6 +2005,21 @@ export async function seedData(): Promise<void> {
       isFree: true,
       status: 'live' as const,
     },
+    {
+      name: 'Free AI Tokens Hub',
+      slug: 'free-ai-tokens-hub',
+      description: 'Access free AI tokens and credits for various AI platforms. Get started with AI tools without spending money.',
+      category: 'AI & Automation',
+      features: [
+        'Free token allocation',
+        'Multiple platform support',
+        'Usage tracking',
+        'Instant access',
+      ],
+      toolUrl: '/tools/free-ai-tokens-hub',
+      isFree: true,
+      status: 'live' as const,
+    },
   ];
 
     for (const tool of aiTools) {
@@ -2018,138 +2038,290 @@ export async function seedData(): Promise<void> {
   }
 
   // Seed Courses (idempotent via upsert by slug)
+  // Remove old fake courses that are no longer in the seed list
+  const validCourseSlugs = [
+    'ai-advance', 'graphic-designing', 'social-media-marketing', 'e-commerce-shopify',
+    'video-editing', 'ebay', 'amazon', 'youtube', 'personal-branding', 'muse-ai',
+  ];
+  await Course.deleteMany({ slug: { $nin: validCourseSlugs } });
+
   const courses = [
     {
-      title: 'Shopify Mastery: Build & Scale Your Online Store',
-      slug: 'shopify-mastery-build-scale-online-store',
-      description: 'Complete Shopify course covering store setup, product optimization, marketing, and scaling strategies. Go from zero to profitable in 30 days.',
+      title: 'AI Advance',
+      slug: 'ai-advance',
+      description: 'A comprehensive course on advanced AI tools and techniques for online sellers and entrepreneurs.',
       instructor: 'Mahreen Yousaf',
-      category: 'E-commerce',
-      level: 'beginner' as const,
-      status: 'draft' as const,
-      price: 0,
-      enrolledCount: 245,
-      thumbnail: 'https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?w=400&h=225&fit=crop',
+      category: 'AI & Automation',
+      level: 'intermediate' as const,
+      status: 'published' as const,
+      price: 72,
+      enrolledCount: 0,
+      thumbnail: 'https://drive.google.com/thumbnail?id=1Tk2BY-aMZHZBuEfT60LvhXdUrYbDD9Ty&sz=w1920',
       modules: [
         {
-          title: 'Getting Started with Shopify',
+          title: 'AI Fundamentals',
           lessons: [
-            { title: 'Welcome & Course Overview', content: 'Overview of what you will learn in this course and how to get the most out of it.', duration: 5 },
-            { title: 'Setting Up Your Shopify Account', content: 'Step-by-step guide to creating your Shopify account, choosing a plan, and configuring basic settings.', duration: 15 },
-            { title: 'Choosing & Customizing Your Theme', content: 'How to select the right theme for your niche and customize colors, fonts, and layout without coding.', duration: 20 },
+            { title: 'Welcome & Course Overview', content: 'Overview of advanced AI concepts covered in this course.', duration: 10 },
+            { title: 'Setting Up AI Tools', content: 'How to configure and integrate AI tools into your workflow.', duration: 20 },
           ],
         },
         {
-          title: 'Product Listings That Convert',
+          title: 'Advanced AI Applications',
           lessons: [
-            { title: 'Writing Compelling Product Descriptions', content: 'Learn the psychology of persuasive product copy and SEO-optimized descriptions that drive sales.', duration: 25 },
-            { title: 'Product Photography Best Practices', content: 'How to take professional product photos with minimal equipment. Lighting, angles, and editing tips.', duration: 30 },
-            { title: 'Pricing Strategy & Profit Margins', content: 'Calculate optimal pricing that covers costs, platform fees, and delivers healthy profit margins.', duration: 20 },
-          ],
-        },
-        {
-          title: 'Marketing & Traffic Generation',
-          lessons: [
-            { title: 'Facebook Ads Fundamentals', content: 'Set up your first Facebook ad campaign targeting the right audience with compelling creative.', duration: 35 },
-            { title: 'Instagram Marketing for E-commerce', content: 'Build an Instagram presence that drives traffic and sales through Reels, Stories, and Shopping features.', duration: 25 },
-            { title: 'Email Marketing & Retention', content: 'Build an email list, create automated sequences, and turn one-time buyers into repeat customers.', duration: 30 },
+            { title: 'Prompt Engineering Mastery', content: 'Write effective prompts for ChatGPT, Claude, and Gemini to get precise outputs.', duration: 30 },
+            { title: 'AI-Powered Business Automation', content: 'Automate repetitive tasks using AI tools for content creation, customer service, and analytics.', duration: 35 },
           ],
         },
       ],
     },
     {
-      title: 'eBay Selling Blueprint: From Zero to Top Rated Seller',
-      slug: 'ebay-selling-blueprint-zero-to-top-rated',
-      description: 'Master eBay selling with proven strategies for listing optimization, pricing, shipping, and achieving Top Rated Seller status.',
+      title: 'Graphic Designing',
+      slug: 'graphic-designing',
+      description: 'Master visual communication and create stunning designs using industry-standard tools. Learn branding, logo design, social media graphics, and build a professional portfolio.',
+      instructor: 'Mahreen Yousaf',
+      category: 'Design',
+      level: 'beginner' as const,
+      status: 'published' as const,
+      price: 25,
+      enrolledCount: 0,
+      thumbnail: 'https://drive.google.com/thumbnail?id=1gna3vgH_GbECQ2AyGBo1RJ8TfVqBFa3u&sz=w1920',
+      modules: [
+        {
+          title: 'Design Fundamentals',
+          lessons: [
+            { title: 'Principles of Visual Design', content: 'Learn color theory, typography, layout, and composition fundamentals.', duration: 25 },
+            { title: 'Introduction to Canva & Adobe Tools', content: 'Get started with Canva, Adobe Photoshop, and Adobe Illustrator for design projects.', duration: 30 },
+          ],
+        },
+        {
+          title: 'Practical Design Projects',
+          lessons: [
+            { title: 'Logo & Brand Identity Design', content: 'Create professional logos and cohesive brand identity packages.', duration: 35 },
+            { title: 'Social Media Graphics', content: 'Design eye-catching social media posts, stories, and banners.', duration: 25 },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Social Media Marketing',
+      slug: 'social-media-marketing',
+      description: 'Build powerful social media marketing strategies and manage campaigns across platforms. Master content planning, analytics, and audience growth techniques.',
+      instructor: 'Mahreen Yousaf',
+      category: 'Marketing',
+      level: 'beginner' as const,
+      status: 'published' as const,
+      price: 54,
+      enrolledCount: 0,
+      thumbnail: 'https://drive.google.com/thumbnail?id=16iUAyQtSfJsc8Lwh3uAwWv1J4E_tfMrD&sz=w1920',
+      modules: [
+        {
+          title: 'Social Media Strategy',
+          lessons: [
+            { title: 'Content Planning & Strategy', content: 'Develop a data-driven content strategy for Facebook, Instagram, and TikTok.', duration: 25 },
+            { title: 'Meta Business Suite Mastery', content: 'Navigate Meta Business Suite for scheduling, analytics, and ad management.', duration: 30 },
+          ],
+        },
+        {
+          title: 'Growth & Analytics',
+          lessons: [
+            { title: 'Audience Growth Techniques', content: 'Proven methods to grow followers organically across all major platforms.', duration: 25 },
+            { title: 'Analytics & Performance Tracking', content: 'Measure campaign success and optimize based on engagement and conversion data.', duration: 20 },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'E-Commerce & Shopify',
+      slug: 'e-commerce-shopify',
+      description: 'Launch and scale profitable online stores with Shopify. Master store setup, product research, listing optimization, and conversion strategies.',
       instructor: 'Mahreen Yousaf',
       category: 'E-commerce',
       level: 'beginner' as const,
-      status: 'draft' as const,
-      price: 0,
-      enrolledCount: 189,
-      thumbnail: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&h=225&fit=crop',
+      status: 'published' as const,
+      price: 72,
+      enrolledCount: 0,
+      thumbnail: 'https://drive.google.com/thumbnail?id=1UHwOPcPQmi158da9Fz1sZ-twBXUycSzR&sz=w1920',
+      modules: [
+        {
+          title: 'Store Setup & Design',
+          lessons: [
+            { title: 'Shopify Store Setup', content: 'Step-by-step guide to creating and configuring your Shopify store from scratch.', duration: 30 },
+            { title: 'Store Design & Customization', content: 'Customize themes, layouts, and branding for a professional storefront.', duration: 25 },
+          ],
+        },
+        {
+          title: 'Product & Sales Strategy',
+          lessons: [
+            { title: 'Product Research & Hunting', content: 'Find winning products using research tools and market analysis techniques.', duration: 30 },
+            { title: 'Product Listing Optimization', content: 'Write compelling descriptions and optimize listings for maximum conversions.', duration: 25 },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Video Editing',
+      slug: 'video-editing',
+      description: 'Create professional video content for social media and beyond. Master editing techniques, motion graphics, color grading, and produce engaging reels, shorts, and long-form videos.',
+      instructor: 'Mahreen Yousaf',
+      category: 'Creative',
+      level: 'beginner' as const,
+      status: 'published' as const,
+      price: 54,
+      enrolledCount: 0,
+      thumbnail: 'https://drive.google.com/thumbnail?id=1SmSWRjWJYetas2DGu-MvFgk7TiWG08qy&sz=w1920',
+      modules: [
+        {
+          title: 'Editing Fundamentals',
+          lessons: [
+            { title: 'CapCut & Premiere Pro Basics', content: 'Get started with CapCut and Adobe Premiere Pro for professional video editing.', duration: 30 },
+            { title: 'Color Grading & Effects', content: 'Apply color correction, grading, and visual effects to enhance video quality.', duration: 25 },
+          ],
+        },
+        {
+          title: 'Content Creation',
+          lessons: [
+            { title: 'Reels & Shorts Editing', content: 'Create viral-worthy short-form content optimized for Instagram Reels and YouTube Shorts.', duration: 25 },
+            { title: 'Motion Graphics with After Effects', content: 'Add professional motion graphics, titles, and animations to your videos.', duration: 35 },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'eBay',
+      slug: 'ebay',
+      description: 'A complete course on building a profitable eBay selling business from listing optimization to scaling operations.',
+      instructor: 'Mahreen Yousaf',
+      category: 'E-commerce',
+      level: 'beginner' as const,
+      status: 'published' as const,
+      price: 109,
+      enrolledCount: 0,
+      thumbnail: 'https://drive.google.com/thumbnail?id=1y7vuTbCYjc19vYcp6SUD4GR2rXeMeL6o&sz=w1920',
       modules: [
         {
           title: 'eBay Fundamentals',
           lessons: [
-            { title: 'Understanding eBay\'s Algorithm', content: 'How Cassini search works and what factors determine your listing visibility.', duration: 15 },
             { title: 'Account Setup & Seller Dashboard', content: 'Configure your seller account, payment methods, shipping preferences, and return policies.', duration: 20 },
-            { title: 'Finding Profitable Products to Sell', content: 'Research methods for identifying high-demand, low-competition products using Terapeak and competitor analysis.', duration: 30 },
+            { title: 'Finding Profitable Products', content: 'Research methods for identifying high-demand, low-competition products using Terapeak.', duration: 30 },
           ],
         },
         {
-          title: 'Listing Optimization Mastery',
+          title: 'Listing & Scaling',
           lessons: [
-            { title: 'Title Optimization Secrets', content: 'Write titles that rank using all 80 characters effectively. Keyword placement and formatting best practices.', duration: 25 },
-            { title: 'Item Specifics & Categories', content: 'Why filling every item specific matters and how to choose the right category for maximum visibility.', duration: 15 },
-            { title: 'Professional Listing Templates', content: 'Create clean, mobile-friendly listing templates that build buyer confidence and reduce questions.', duration: 20 },
-          ],
-        },
-        {
-          title: 'Scaling Your eBay Business',
-          lessons: [
-            { title: 'Shipping Efficiency & Cost Savings', content: 'Negotiate carrier rates, optimize packaging, and use calculated shipping to protect margins.', duration: 20 },
-            { title: 'Achieving Top Rated Seller Status', content: 'The metrics that matter, how to maintain them, and the benefits ofTRS including fee discounts.', duration: 15 },
-            { title: 'Automation Tools & Bulk Listing', content: 'Use tools like Turbo Lister and third-party software to manage inventory and list products faster.', duration: 25 },
+            { title: 'Title & Listing Optimization', content: 'Write titles that rank using all 80 characters effectively and optimize item specifics.', duration: 25 },
+            { title: 'Scaling Your eBay Business', content: 'Automation tools, bulk listing strategies, and achieving Top Rated Seller status.', duration: 30 },
           ],
         },
       ],
     },
     {
-      title: 'SEO for E-commerce: Rank Higher & Drive Free Traffic',
-      slug: 'seo-for-ecommerce-rank-higher-free-traffic',
-      description: 'Comprehensive SEO course for online sellers. Learn keyword research, on-page optimization, technical SEO, and link building for e-commerce sites.',
+      title: 'Amazon',
+      slug: 'amazon',
+      description: 'A complete course on mastering Amazon selling and e-commerce strategies including FBA, listing optimization, and PPC advertising.',
       instructor: 'Mahreen Yousaf',
-      category: 'SEO',
+      category: 'E-commerce',
       level: 'intermediate' as const,
-      status: 'draft' as const,
-      price: 0,
-      enrolledCount: 312,
-      thumbnail: 'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=400&h=225&fit=crop',
+      status: 'published' as const,
+      price: 145,
+      enrolledCount: 0,
+      thumbnail: 'https://drive.google.com/thumbnail?id=1LR3RcUMtSyJTuEXetIPoKMC83lO47EfU&sz=w1920',
       modules: [
         {
-          title: 'Keyword Research for Sellers',
+          title: 'Amazon Selling Basics',
           lessons: [
-            { title: 'Understanding Buyer Search Intent', content: 'Map keywords to buying stages and identify high-intent commercial queries that convert.', duration: 20 },
-            { title: 'Free Keyword Research Tools', content: 'Use Google Keyword Planner, Ubersuggest, and platform autocomplete to build keyword lists.', duration: 25 },
-            { title: 'Competitor Keyword Analysis', content: 'Reverse-engineer competitor rankings to find keyword opportunities they are missing.', duration: 20 },
+            { title: 'Amazon Seller Central Setup', content: 'Register, configure your seller account, and understand fee structures.', duration: 20 },
+            { title: 'Product Research for Amazon', content: 'Use Helium 10, Jungle Scout, and manual methods to find profitable niches.', duration: 35 },
           ],
         },
         {
-          title: 'On-Page SEO Optimization',
+          title: 'FBA & Advertising',
           lessons: [
-            { title: 'Optimizing Product Pages for Search', content: 'Title tags, meta descriptions, URL structure, image alt text, and internal linking for product pages.', duration: 30 },
-            { title: 'Content Marketing for E-commerce', content: 'Blog strategy, buying guides, and comparison posts that attract organic traffic and build authority.', duration: 25 },
-            { title: 'Technical SEO Essentials', content: 'Site speed, mobile optimization, schema markup, and crawlability fixes that improve rankings.', duration: 30 },
+            { title: 'Fulfillment by Amazon (FBA)', content: 'Ship inventory to Amazon warehouses and leverage Prime eligibility for faster sales.', duration: 30 },
+            { title: 'Amazon PPC Advertising', content: 'Set up and optimize Sponsored Products campaigns to drive targeted traffic.', duration: 35 },
           ],
         },
       ],
     },
     {
-      title: 'AI Tools for Online Sellers: Automate & Scale',
-      slug: 'ai-tools-online-sellers-automate-scale',
-      description: 'Learn to leverage AI tools for product research, listing creation, marketing automation, and customer service. Work smarter, not harder.',
+      title: 'YouTube',
+      slug: 'youtube',
+      description: 'A complete course on creating, growing, and monetizing a YouTube channel from content strategy to audience building.',
+      instructor: 'Mahreen Yousaf',
+      category: 'Creative',
+      level: 'beginner' as const,
+      status: 'published' as const,
+      price: 72,
+      enrolledCount: 0,
+      thumbnail: 'https://drive.google.com/thumbnail?id=12Ph2xSmCDlHmpO8z_VwxFt97LH8YGHn7&sz=w1920',
+      modules: [
+        {
+          title: 'Channel Setup & Content Strategy',
+          lessons: [
+            { title: 'Creating Your YouTube Channel', content: 'Set up your channel, branding, and define your content niche and target audience.', duration: 20 },
+            { title: 'Content Planning & Scripting', content: 'Plan video topics, write scripts, and create a sustainable content calendar.', duration: 25 },
+          ],
+        },
+        {
+          title: 'Growth & Monetization',
+          lessons: [
+            { title: 'YouTube SEO & Thumbnails', content: 'Optimize titles, descriptions, tags, and thumbnails for maximum discoverability.', duration: 30 },
+            { title: 'Monetization Strategies', content: 'AdSense, sponsorships, affiliate marketing, and other revenue streams for creators.', duration: 25 },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Personal Branding',
+      slug: 'personal-branding',
+      description: 'A course on building and leveraging your personal brand effectively across digital platforms.',
+      instructor: 'Mahreen Yousaf',
+      category: 'Marketing',
+      level: 'beginner' as const,
+      status: 'published' as const,
+      price: 54,
+      enrolledCount: 0,
+      thumbnail: 'https://drive.google.com/thumbnail?id=10zJjP4hMWDYEMCFppYh1onSw6tCq8ffx&sz=w1920',
+      modules: [
+        {
+          title: 'Brand Foundations',
+          lessons: [
+            { title: 'Defining Your Personal Brand', content: 'Identify your unique value proposition, voice, and visual identity.', duration: 25 },
+            { title: 'Building an Online Presence', content: 'Set up and optimize profiles across LinkedIn, Instagram, and other platforms.', duration: 20 },
+          ],
+        },
+        {
+          title: 'Content & Networking',
+          lessons: [
+            { title: 'Content Strategy for Personal Brands', content: 'Create consistent, authentic content that resonates with your target audience.', duration: 30 },
+            { title: 'Networking & Collaboration', content: 'Build meaningful connections and collaborate with others to amplify your reach.', duration: 25 },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Muse AI',
+      slug: 'muse-ai',
+      description: 'A course on harnessing Muse AI for creative and productive workflows including image generation, ideation, and design assistance.',
       instructor: 'Mahreen Yousaf',
       category: 'AI & Automation',
       level: 'beginner' as const,
-      status: 'draft' as const,
-      price: 0,
-      enrolledCount: 178,
-      thumbnail: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=225&fit=crop',
+      status: 'published' as const,
+      price: 54,
+      enrolledCount: 0,
+      thumbnail: 'https://drive.google.com/thumbnail?id=15MfRIvuK-ripJ4oTSW7QPvmqpt-MOL-6&sz=w1920',
       modules: [
         {
-          title: 'AI Fundamentals for Sellers',
+          title: 'Getting Started with Muse AI',
           lessons: [
-            { title: 'What AI Can (and Can\'t) Do for Your Business', content: 'Realistic expectations for AI tools. Where AI excels and where human judgment is essential.', duration: 15 },
-            { title: 'Prompt Engineering Basics', content: 'Write effective prompts that produce useful, accurate outputs from ChatGPT, Claude, and Gemini.', duration: 25 },
+            { title: 'Introduction to Muse AI', content: 'Understand what Muse AI is, its capabilities, and how it fits into creative workflows.', duration: 15 },
+            { title: 'Setting Up & First Project', content: 'Configure Muse AI and complete your first creative project step by step.', duration: 25 },
           ],
         },
         {
-          title: 'AI-Powered Content Creation',
+          title: 'Advanced Workflows',
           lessons: [
-            { title: 'Product Descriptions at Scale', content: 'Generate unique, SEO-optimized product descriptions in minutes using AI writing tools.', duration: 30 },
-            { title: 'Social Media Content with AI', content: 'Create captions, hashtags, and content calendars using AI while maintaining authentic brand voice.', duration: 20 },
-            { title: 'Email Marketing Automation', content: 'AI-generated email sequences for welcome flows, abandoned carts, and re-engagement campaigns.', duration: 25 },
+            { title: 'Image Generation & Ideation', content: 'Generate images, brainstorm ideas, and iterate on creative concepts using Muse AI.', duration: 30 },
+            { title: 'Integrating Muse AI into Your Business', content: 'Use Muse AI outputs in marketing materials, social media, and product design.', duration: 25 },
           ],
         },
       ],
@@ -2281,6 +2453,36 @@ export async function seedData(): Promise<void> {
     );
   }
   console.log(`[SEED] Upserted ${resources.length} resources`);
+
+  // Remove 4 wrong resources from a prior bad seed run (targeted deletion only).
+  await Resource.deleteMany({
+    title: {
+      $in: [
+        'Keyword Research Spreadsheet',
+        'Email Marketing Templates Pack',
+        'E-commerce Photography Guide',
+        'Competitor Analysis Framework',
+      ],
+    },
+  });
+  console.log('[SEED] Removed stale resources from prior bad seed');
+
+  // Dedup: The 4 MG Blessed Beginnings Resource Library guides are rendered
+  // from hardcoded arrays in both Resources.tsx and AdminConsole.tsx. If they
+  // also exist as DB Resource documents (from a prior seed or admin action),
+  // they appear twice — once in "Available Resources" and once in the
+  // "Resource Library" section. Delete any DB records matching these titles
+  // so each title appears exactly once (from the hardcoded array only).
+  const mgGuideTitles = [
+    'Free AI Tools Guide',
+    'Canva Tips and Tutorials',
+    'AI Marketing Guide',
+    'Digital Safety Guide',
+  ];
+  const mgDupResult = await Resource.deleteMany({ title: { $in: mgGuideTitles } });
+  if (mgDupResult.deletedCount && mgDupResult.deletedCount > 0) {
+    console.log(`[SEED] Removed ${mgDupResult.deletedCount} duplicate MG guide resource(s) from DB (rendered from hardcoded arrays)`);
+  }
 
   // Seed default AI provider from env vars (idempotent upsert).
   // Only creates the provider if it does NOT already exist in DB.
@@ -3090,51 +3292,233 @@ export async function seedData(): Promise<void> {
     console.error('[SEED] Failed to seed projects:', err instanceof Error ? err.message : err);
   }
 
-  // Seed Shop Products (idempotent — only seed if collection is empty)
-  const productCount = await Product.countDocuments();
-  if (productCount === 0) {
-    const shopProducts = [
+  // Seed Shop Products — clear stale data then insert the canonical set.
+  // deleteMany + insertMany ensures re-seeding never produces duplicates or
+  // leftover documents from previous product lists.
+  await Product.deleteMany({});
+  const SHOP_PRODUCTS = [
+    { title: '30 Pinterest Pin Templates for Modest Fashion Bloggers', price: 15, currency: 'USD', buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/30-pinterest-pin-templates-modest-fashion', salesCount: 0 },
+    { title: '22 Winter Abaya Outfits — The Complete Winter Guide', price: 10, currency: 'USD', buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/22-winter-abaya-outfits-guide', salesCount: 0 },
+    { title: '50 AI Prompts for Pinterest Creators & Online Sellers', price: 15, currency: 'USD', buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/ohjnua', salesCount: 0 },
+    { title: 'Pinterest Content Calendar — Notion Template', price: 25, currency: 'USD', buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/ceeoa', salesCount: 0 },
+  ];
+  await Product.insertMany(SHOP_PRODUCTS);
+  console.log(`[SEED] Seeded ${SHOP_PRODUCTS.length} shop products`);
+
+  // Seed Founder document (idempotent via delete + upsert)
+  await Founder.deleteMany({});
+  await Founder.findOneAndUpdate(
+    {},
+    {
+      $set: {
+        name: 'Mahreen Yousaf',
+        title: 'Founder & CEO, HMsmart | Co-Founder, MG Blessed Beginnings',
+        photo: 'https://drive.google.com/thumbnail?id=1JyOiHzGnglHR5woY1qwApIHM3PA6BxYa&sz=w1920',
+        bio: 'Mahreen Yousaf is the Founder & CEO of HMsmart and Co-Founder of MG Blessed Beginnings. She helps online sellers grow with free AI tools, digital marketing, and e-commerce training. 100+ students trained, 30+ businesses launched.',
+      },
+    },
+    { upsert: true, new: true, runValidators: true },
+  );
+  console.log('[SEED] Upserted founder document');
+
+  // Seed Homepage Settings — delete all existing documents first, then create a
+  // single fresh one.  The previous findOne + skip-if-exists pattern left stale
+  // data in the collection forever; deleteMany + create guarantees the Admin
+  // Console always shows the correct pre-filled values on every server boot.
+  try {
+    await HomepageSettings.deleteMany({});
+    await HomepageSettings.create({
+      hero: {
+        headline: 'Your AI-Powered Business Toolkit',
+        subheadline: 'Free AI tools for content, marketing, SEO, eCommerce & online business.',
+        imageUrl: 'https://drive.google.com/thumbnail?id=1JyOiHzGnglHR5woY1qwApIHM3PA6BxYa&sz=w1920',
+      },
+      contentHook: {
+        title: 'Optimize your listing in 60 seconds ⬇️',
+        description: 'MG AI Assistant can help you generate SEO titles, product descriptions, hashtags, and marketing content — try our free AI tools today.',
+        imageUrl: '',
+      },
+      journeySteps: [
+        { number: '01', title: 'Idea', description: 'Start with your business concept and vision.', iconName: 'Lightbulb' },
+        { number: '02', title: 'Research', description: 'Validate your idea with AI-powered market analysis.', iconName: 'Search' },
+        { number: '03', title: 'Brand', description: 'Build a memorable brand identity that stands out.', iconName: 'Palette' },
+        { number: '04', title: 'Build', description: 'Create products, listings, and your online store.', iconName: 'Hammer' },
+        { number: '05', title: 'Market', description: 'Generate content and strategies to attract customers.', iconName: 'Megaphone' },
+        { number: '06', title: 'Grow', description: 'Scale with data-driven insights and optimization.', iconName: 'TrendingUp' },
+      ],
+      aiReadinessPreview: {
+        sectionTitle: 'AI Business Toolkit',
+        readinessTitle: 'See Your Business Potential Before You Launch',
+        description: 'Free AI tools for content, marketing, SEO, eCommerce & online business.',
+        readinessDescription: 'Get an AI-powered readiness preview that shows where your business idea stands — before you invest time or money.',
+      },
+      adSlots: [
+        { advertiserName: 'Ad Slot 1', imageUrl: '', linkUrl: '', tagline: '' },
+        { advertiserName: 'Ad Slot 2', imageUrl: '', linkUrl: '', tagline: '' },
+        { advertiserName: 'Ad Slot 3', imageUrl: '', linkUrl: '', tagline: '' },
+        { advertiserName: 'Ad Slot 4', imageUrl: '', linkUrl: '', tagline: '' },
+        { advertiserName: 'Ad Slot 5', imageUrl: '', linkUrl: '', tagline: '' },
+      ],
+    });
+    console.log('[SEED] Replaced homepage settings with fresh document');
+  } catch (err) {
+    console.error('[SEED] Failed to seed homepage settings:', err instanceof Error ? err.message : err);
+  }
+
+  // ─── Seed Portfolio items (from public /portfolio page content) ──────────────
+  try {
+    const portfolioItems = [
       {
-        title: 'Digital Marketing Playbook',
-        price: 'PKR 2,500',
-        purchaseLink: 'https://mgdigiskillsacademy.gumroad.com/l/digital-marketing-playbook',
-        salesCount: 0,
+        title: 'Shopify Store Launch',
+        category: 'E-commerce Setup',
+        description: 'Complete Shopify store setup and optimization for a fashion boutique. From theme selection to final launch with integrated payment gateways.',
+        metrics: ['Store setup completed', 'Payment gateway integration', 'Mobile-responsive design'],
       },
       {
-        title: 'Brand Strategy Template',
-        price: 'PKR 1,500',
-        purchaseLink: 'https://mgdigiskillsacademy.gumroad.com/l/brand-strategy-template',
-        salesCount: 0,
+        title: 'eBay Listing Optimization',
+        category: 'Marketplace Optimization',
+        description: 'Optimized product listings for an electronics seller on eBay. Improved titles, descriptions, and images to increase visibility and sales.',
+        metrics: ['Improved search ranking', 'Enhanced listing quality', 'Better conversion potential'],
       },
       {
-        title: 'SEO Keyword Research Guide',
-        price: 'PKR 1,800',
-        purchaseLink: 'https://mgdigiskillsacademy.gumroad.com/l/seo-keyword-research-guide',
-        salesCount: 0,
+        title: 'Etsy Shop Launch',
+        category: 'Handmade & Crafts',
+        description: 'Launched a handmade jewelry shop on Etsy with optimized listings, SEO-friendly tags, and professional product photography guidance.',
+        metrics: ['Shop successfully launched', 'SEO-optimized listings', 'Professional presentation'],
       },
       {
-        title: 'Social Media Content Calendar',
-        price: 'PKR 1,200',
-        purchaseLink: 'https://mgdigiskillsacademy.gumroad.com/l/social-media-calendar',
-        salesCount: 0,
-      },
-      {
-        title: 'E-commerce Profit Calculator',
-        price: 'PKR 1,000',
-        purchaseLink: 'https://mgdigiskillsacademy.gumroad.com/l/ecommerce-profit-calculator',
-        salesCount: 0,
-      },
-      {
-        title: 'Business Brand Kit',
-        price: 'PKR 3,500',
-        purchaseLink: 'https://mgdigiskillsacademy.gumroad.com/l/business-brand-kit',
-        salesCount: 0,
+        title: 'Digital Marketing Campaign',
+        category: 'Social Media & Ads',
+        description: 'Multi-platform digital marketing campaign for a beauty brand. Combined Instagram ads, TikTok content strategy, and email marketing.',
+        metrics: ['Multi-platform strategy', 'Content creation', 'Audience growth focus'],
       },
     ];
-    await Product.insertMany(shopProducts);
-    console.log(`[SEED] Seeded ${shopProducts.length} shop products`);
-  } else {
-    console.log(`[SEED] Shop products already exist (${productCount}) — skipping`);
+
+    // Delete stale rows not in the seed list, then upsert by title
+    const validPortfolioTitles = portfolioItems.map((p) => p.title);
+    await Portfolio.deleteMany({ title: { $nin: validPortfolioTitles } });
+
+    for (const item of portfolioItems) {
+      await Portfolio.findOneAndUpdate(
+        { title: item.title },
+        { $set: item },
+        { upsert: true, new: true, runValidators: true },
+      );
+    }
+    console.log(`[SEED] Upserted ${portfolioItems.length} portfolio items`);
+  } catch (err) {
+    console.error('[SEED] Failed to seed portfolio items:', err instanceof Error ? err.message : err);
+  }
+
+  // ─── Seed 30-Day Plan items (from public /30-day-plan page data) ──────────
+  try {
+    const thirtyDayPlanItems = [
+      { dayNumber: 1, phase: 'Foundation', title: 'Fix Branding + ASO', description: 'Update your app name, description, and keywords across all store listings and website meta tags. Consistent branding builds trust and improves discoverability from day one.', tasks: ['Audit current app store listings for keyword gaps', 'Rewrite app title with primary keyword in first 30 characters', 'Update website meta tags to match new messaging', 'List top 5 target keywords per platform'], icon: 'Tag', tip: 'Use AI SEO Title Optimizer to generate keyword-rich titles instantly.', category: 'branding' },
+      { dayNumber: 2, phase: 'Foundation', title: 'Visual Brand Identity', description: 'Create consistent visual branding — logo, color palette, and font pairings. A cohesive brand identity makes your content instantly recognizable across every platform.', tasks: ['Finalize logo in square, horizontal, and icon-only formats', 'Define brand color palette (primary, secondary, accent)', 'Choose two complementary fonts (heading + body)', 'Create social media profile images using new branding', 'Build a simple brand guidelines PDF for consistency'], icon: 'Palette', category: 'branding' },
+      { dayNumber: 3, phase: 'Foundation', title: 'Optimize Store Listings', description: 'Optimize screenshots and app store descriptions for target keywords. Well-crafted descriptions convert browsers into downloads and improve organic search rankings.', tasks: ['Write keyword-rich app description (first 80 chars most important)', 'Design 3-5 feature highlight screenshots', 'Add captions to each screenshot explaining the benefit', 'Submit updated listing for review'], icon: 'Store', tip: 'Use Content Templates to generate optimized product descriptions quickly.', category: 'branding' },
+      { dayNumber: 4, phase: 'Content Launch', title: 'Design App Screenshots', description: 'Design 5 app store screenshots that follow a problem-solution-result narrative. Visual storytelling in screenshots dramatically increases conversion rates.', tasks: ['Screenshot 1: Show the pain point users face', 'Screenshot 2-3: Demonstrate the solution flow', 'Screenshot 4: Highlight key results and metrics', 'Screenshot 5: Strong CTA with social proof', 'Export in correct dimensions for each store'], icon: 'Image', category: 'content' },
+      { dayNumber: 5, phase: 'Content Launch', title: 'Screen Record Tool Demos', description: 'Screen-record tool demos for each AI tool. Short video walkthroughs build credibility and show potential users exactly what they will get before downloading.', tasks: ['Record Product Description Generator demo (30-60 sec)', 'Record SEO Title Optimizer demo (30-60 sec)', 'Record Hashtag Generator demo (30-60 sec)', 'Edit clips: add captions, trim dead air, add outro CTA'], icon: 'Video', tip: 'Keep each demo under 60 seconds — attention spans are short on social media.', category: 'content' },
+      { dayNumber: 6, phase: 'Content Launch', title: 'Publish Launch Announcement', description: 'Write and publish your launch announcement across all platforms. A well-crafted launch post generates initial buzz and drives your first wave of users.', tasks: ['Write launch post with compelling hook and CTA', 'Create platform-specific versions (IG, TikTok, LinkedIn, Twitter)', 'Post at optimal times for each platform', 'Engage with every comment within 1 hour'], icon: 'Megaphone', category: 'content' },
+      { dayNumber: 7, phase: 'Content Launch', title: 'Community Outreach', description: 'Share your launch announcement in WhatsApp groups, Facebook communities, and relevant online forums. Personal outreach in communities converts better than cold ads.', tasks: ['Identify 10+ relevant WhatsApp/Facebook groups', 'Craft personalized messages for each community', 'Share launch post with value-first framing', 'Follow up with interested members via DM'], icon: 'Users', category: 'engagement' },
+      { dayNumber: 8, phase: 'Demo Series', title: 'Reel: Product Description Generator', description: 'Create a Reel showcasing the Product Description Generator. Demo Reels are the highest-converting content format for SaaS products on Instagram and TikTok.', tasks: ['Script the Reel: hook (3s), demo (20s), CTA (5s)', 'Record screen capture of tool in action', 'Add trending audio and text overlays', 'Post to Instagram Reels, TikTok, and YouTube Shorts'], icon: 'Film', category: 'content' },
+      { dayNumber: 9, phase: 'Demo Series', title: 'Reel: SEO Title Optimizer', description: 'Create a Reel demonstrating the SEO Title Optimizer. Show real before-and-after title improvements to prove the tool delivers measurable results.', tasks: ['Prepare 3 weak titles and their optimized versions', 'Record the optimization process on screen', 'Add before/after comparison overlay', 'Cross-post to all short-form video platforms'], icon: 'Search', category: 'content' },
+      { dayNumber: 10, phase: 'Demo Series', title: 'Reel: Hashtag Generator', description: 'Create a Reel showing the Hashtag Generator in action. Hashtags drive discovery — demonstrate how the tool finds niche-relevant tags that boost reach.', tasks: ['Show hashtag generation for a real product niche', 'Highlight the relevance score and categorization', 'Include a "Try it free" CTA in caption', 'Engage with comments and share user results'], icon: 'Hash', category: 'content' },
+      { dayNumber: 11, phase: 'Education', title: 'Why SEO Titles Matter', description: 'Post educational content about why SEO titles matter for sellers. Educational posts position you as an authority and attract users who need your tools.', tasks: ['Write carousel or thread: "5 Reasons Your SEO Title Is Losing Sales"', 'Include real examples of bad vs. good titles', 'End with CTA linking to your SEO Title Optimizer', 'Repurpose as blog post or LinkedIn article'], icon: 'BookOpen', category: 'content' },
+      { dayNumber: 12, phase: 'Education', title: 'Product Descriptions & Sales', description: 'Post educational content about how product descriptions directly affect sales. Data-backed educational content builds trust and drives tool adoption.', tasks: ['Research stats on description quality vs. conversion rates', 'Create infographic or carousel with key findings', 'Show side-by-side comparison of weak vs. strong descriptions', 'Link to Product Description Generator in bio/comments'], icon: 'TrendingUp', category: 'content' },
+      { dayNumber: 13, phase: 'Education', title: 'Hashtag Strategy Guide', description: 'Post educational content on hashtag strategy for small businesses. Practical tips create saveable content that gets shared and extends your reach organically.', tasks: ['Write "Hashtag Strategy 101" guide for e-commerce sellers', 'Include mix ratios: broad, niche, branded hashtags', 'Provide a free hashtag template or checklist', 'CTA: "Generate your perfect hashtag set with our free tool"'], icon: 'Bookmark', category: 'content' },
+      { dayNumber: 14, phase: 'Education', title: 'Launch Referral Campaign', description: 'Launch your first referral campaign — activate the referral system and share it on WhatsApp. Referrals are the highest-trust acquisition channel for early-stage apps.', tasks: ['Activate referral system and test end-to-end flow', 'Create referral announcement post for all platforms', 'Share personal referral link in WhatsApp groups', 'DM early supporters asking them to share', 'Track first referral signups and celebrate publicly'], icon: 'Gift', tip: 'Offer a meaningful incentive — free credits or exclusive content for referrals.', category: 'referral' },
+      { dayNumber: 15, phase: 'Lead Magnet', title: 'Create Free PDF Guide', description: 'Create a free downloadable PDF guide such as "10 AI Hacks for Online Sellers." Lead magnets capture emails and build your audience beyond social media followers.', tasks: ['Outline 10 actionable AI tips for e-commerce sellers', 'Design PDF with brand colors and professional layout', 'Include screenshots and step-by-step instructions', 'Add CTAs linking to your AI tools throughout'], icon: 'FileText', category: 'content' },
+      { dayNumber: 16, phase: 'Lead Magnet', title: 'Promote PDF Across Social', description: 'Set up a landing page and promote the PDF across social media. A dedicated landing page with clear value proposition maximizes download conversions.', tasks: ['Create simple landing page with email capture form', 'Write promotional posts highlighting key takeaways', 'Share in stories with swipe-up/link sticker', 'Pin the promotion post on your profiles'], icon: 'Link', category: 'content' },
+      { dayNumber: 17, phase: 'Lead Magnet', title: 'Share-to-Unlock Promotion', description: 'Run a "Share to unlock" promotion for the PDF. Viral mechanics incentivize sharing and exponentially increase your reach without ad spend.', tasks: ['Set up share-gated download mechanism', 'Announce the promotion with urgency language', 'Create story templates users can reshare easily', 'Track shares and feature top sharers publicly'], icon: 'Share2', category: 'engagement' },
+      { dayNumber: 18, phase: 'Build in Public', title: 'Why I Started Building This', description: 'Share Episode 1 of "I Built This" — why you started building MG Blessed Beginnings. Authentic founder stories create emotional connections that drive loyalty.', tasks: ['Write your origin story — the problem that sparked the idea', 'Include early struggles and pivot moments', 'Record a short video version for Reels/TikTok', 'Ask followers to share their own startup stories'], icon: 'Heart', category: 'engagement' },
+      { dayNumber: 19, phase: 'Build in Public', title: 'AI Tools Added This Week', description: 'Share Episode 2 — the AI tools you added this week and why. Build-in-public updates keep your audience invested in your journey and excited about new features.', tasks: ['List new tools/features shipped this week', 'Explain the user problem each tool solves', 'Show behind-the-scenes development snippets', 'Poll followers on which tool to build next'], icon: 'Wrench', category: 'content' },
+      { dayNumber: 20, phase: 'Build in Public', title: 'What Users Are Saying', description: 'Share Episode 3 — what users are saying about your app. Social proof is the strongest conversion driver; real testimonials validate your product\'s value.', tasks: ['Collect 3-5 user testimonials or screenshots of feedback', 'Design testimonial cards with user photos/names', 'Create a compilation Reel of user reactions', 'Invite more users to share their experience'], icon: 'MessageSquare', category: 'engagement' },
+      { dayNumber: 21, phase: 'Community', title: 'User Feedback Campaign', description: 'Run a user feedback campaign using surveys, polls, and DMs. Direct feedback reveals your highest-impact improvements and makes users feel valued.', tasks: ['Create a 3-question survey (Google Forms or Typeform)', 'Post interactive polls on Instagram Stories', 'DM active users asking for honest feedback', 'Compile top themes and share publicly'], icon: 'ClipboardList', category: 'engagement' },
+      { dayNumber: 22, phase: 'Community', title: 'Launch 7-Day Tool Challenge', description: 'Launch the "7-Day Tool Challenge" — use one tool per day for a week. Challenges create engagement loops and help users discover tools they might otherwise skip.', tasks: ['Announce the challenge with rules and daily schedule', 'Create daily challenge graphics for the week', 'Day 1 task: Generate a product description and share result', 'Create a unique hashtag for challenge participants'], icon: 'Target', category: 'engagement' },
+      { dayNumber: 23, phase: 'Community', title: 'Challenge Results & Testimonials', description: 'Post challenge Day 2 results and user testimonials. Showing participant progress creates FOMO and encourages lurkers to join in.', tasks: ['Share Day 1 participant results (with permission)', 'Highlight best submissions in a Story compilation', 'Day 2 task: Optimize an SEO title and compare before/after', 'Respond to every challenge submission personally'], icon: 'Award', category: 'engagement' },
+      { dayNumber: 24, phase: 'Community', title: 'Before/After Comparisons', description: 'Share Day 3 of the challenge with before/after content comparisons. Visual transformations are the most shareable content format and prove tool effectiveness.', tasks: ['Collect before/after pairs from challenge participants', 'Design side-by-side comparison graphics', 'Day 3 task: Generate hashtags and measure reach difference', 'Share aggregate improvement stats from the challenge'], icon: 'ArrowLeftRight', category: 'engagement' },
+      { dayNumber: 25, phase: 'Growth Push', title: 'Referral Push: Bonus Credits', description: 'Launch a referral push with bonus credits and limited-time rewards. Urgency combined with tangible incentives creates a surge in word-of-mouth acquisition.', tasks: ['Announce double referral credits for 48 hours', 'Create urgency-driven graphics with countdown timer', 'DM top 20 existing users with personal referral ask', 'Post referral success stories as social proof'], icon: 'Rocket', category: 'referral' },
+      { dayNumber: 26, phase: 'Growth Push', title: 'Top Referrer Leaderboard', description: 'Share top referrer stories and update the leaderboard. Public recognition motivates continued sharing and creates healthy competition among advocates.', tasks: ['Publish top 5 referrers leaderboard graphic', 'Share individual referrer spotlight stories', 'Announce prizes for top 3 referrers', 'Remind followers the bonus window is closing'], icon: 'Trophy', category: 'referral' },
+      { dayNumber: 27, phase: 'Growth Push', title: 'Last Call: Referral Urgency', description: 'Send last call messaging with urgency for the referral program. Scarcity and deadline pressure drive action from procrastinators who intended to share.', tasks: ['Post "Last 24 Hours" urgency content across platforms', 'Send final WhatsApp broadcast to contact list', 'Share real-time referral count updates', 'Thank everyone who participated regardless of count'], icon: 'Clock', category: 'referral' },
+      { dayNumber: 28, phase: 'Growth Push', title: 'Publish 30-Day Results', description: 'Publish your 30-day results — downloads, users, and engagement metrics. Transparent results build massive credibility and inspire others to follow your playbook.', tasks: ['Compile key metrics: downloads, signups, DAU, retention', 'Design a results infographic with growth chart', 'Write detailed breakdown post (LinkedIn + blog)', 'Create a short video summarizing the journey'], icon: 'BarChart3', category: 'analytics' },
+      { dayNumber: 29, phase: 'Growth Push', title: '"Help Me Reach 500" Campaign', description: 'Make a personal, authentic ask to help reach 500 users. Vulnerability and transparency create emotional investment — people want to be part of a milestone.', tasks: ['Write a heartfelt post sharing current numbers and goal', 'Explain specifically how each share/download helps', 'Create a progress tracker graphic updated in real time', 'Personally thank every new user who joins today'], icon: 'HandHeart', category: 'engagement' },
+      { dayNumber: 30, phase: 'Growth Push', title: 'Analyze & Double Down', description: 'Analyze results, identify top-performing channels, and double down. Data-driven iteration ensures your next 30 days are even more effective than the first.', tasks: ['Rank channels by downloads generated (referral, social, organic)', 'Identify top 3 content pieces by engagement rate', 'Document lessons learned and mistakes to avoid', 'Create next 30-day plan based on winning strategies', 'Celebrate the milestone with your community!'], icon: 'LineChart', tip: 'Schedule this analysis as a recurring monthly review to maintain momentum.', category: 'analytics' },
+    ];
+
+    // Delete stale rows not in the seed list, then upsert by dayNumber
+    const validDayNumbers = thirtyDayPlanItems.map((p) => p.dayNumber);
+    await ThirtyDayPlan.deleteMany({ dayNumber: { $nin: validDayNumbers } });
+
+    for (const item of thirtyDayPlanItems) {
+      await ThirtyDayPlan.findOneAndUpdate(
+        { dayNumber: item.dayNumber },
+        { $set: item },
+        { upsert: true, new: true, runValidators: true },
+      );
+    }
+    console.log(`[SEED] Upserted ${thirtyDayPlanItems.length} 30-day plan items`);
+  } catch (err) {
+    console.error('[SEED] Failed to seed 30-day plan items:', err instanceof Error ? err.message : err);
+  }
+
+  // ─── Deduplicate saved clones (keep earliest per distinct URL) ──────────────
+  try {
+    const seen = new Set<string>();
+    for (const clone of await Clone.find().sort({ createdAt: 1 })) {
+      const key = clone.source.trim().replace(/\/$/, '').toLowerCase();
+      if (seen.has(key)) { await Clone.deleteOne({ _id: clone._id }); }
+      else { seen.add(key); }
+    }
+
+    // Normalize remaining clone source URLs: strip trailing slashes and lowercase
+    // so future upserts match correctly against stored records.
+    const allClonesForNorm = await Clone.find();
+    for (const clone of allClonesForNorm) {
+      const normalized = clone.source.trim().replace(/\/$/, '').toLowerCase();
+      if (clone.source !== normalized) {
+        clone.source = normalized;
+        await clone.save();
+      }
+    }
+
+    console.log('[SEED] Clone deduplication complete');
+
+    // Clean up known test clones that should not persist
+    const testClonePatterns = [/^https?:\/\/example\.com/i];
+    for (const pattern of testClonePatterns) {
+      const result = await Clone.deleteMany({ source: pattern });
+      if (result.deletedCount > 0) {
+        console.log(`[SEED] Removed ${result.deletedCount} test clone(s) matching ${pattern}`);
+      }
+    }
+  } catch (err) {
+    console.error('[SEED] Failed to deduplicate clones:', err instanceof Error ? err.message : err);
+  }
+
+  // ── Repair pass: mark clones whose files are missing on disk ───────────────
+  try {
+    const fs = await import('fs');
+    const path = await import('path');
+    const cloneDir = path.join(process.cwd(), 'uploads', 'clones');
+    const allClones = await Clone.find();
+    let repairedCount = 0;
+    for (const clone of allClones) {
+      const absPath = path.resolve(cloneDir, clone.filePath);
+      if (!fs.existsSync(absPath)) {
+        if (clone.status !== 'FILE_MISSING') {
+          clone.status = 'FILE_MISSING';
+          await clone.save();
+          repairedCount++;
+        }
+      } else if (clone.status === 'FILE_MISSING') {
+        // File exists again (re-cloned) — restore status
+        clone.status = 'SAVED';
+        await clone.save();
+      }
+    }
+    console.log(`[SEED] Clone file repair pass complete (${repairedCount} marked FILE_MISSING)`);
+  } catch (err) {
+    console.error('[SEED] Clone repair pass failed:', err instanceof Error ? err.message : err);
   }
 
   console.log('[SEED] Seeding complete!');

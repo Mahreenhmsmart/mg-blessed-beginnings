@@ -3,6 +3,7 @@ import { Card } from '@/components/ui';
 import SEOHead from '@/components/SEOHead';
 import FAQAccordion from '@/components/FAQAccordion';
 import { ChevronLeft, LifeBuoy, Sparkles, LogIn, Search, FileText, PlayCircle, ShoppingCart, Mail, Clock } from 'lucide-react';
+import { useSeo } from '@/components/Seo';
 
 const helpMeta = {
   title: 'Help & Troubleshooting — MG Blessed Beginnings',
@@ -88,6 +89,10 @@ const issues: IssueItem[] = [
 ];
 
 export default function Help() {
+  useSeo(
+    'Help | MG Blessed Beginnings',
+    'Help and FAQs for MG Blessed Beginnings free AI tools.',
+  );
   const faqItems = issues.map((issue) => ({
     question: issue.question,
     answer: `${issue.reason}\n\nSolution: ${issue.solution}`,

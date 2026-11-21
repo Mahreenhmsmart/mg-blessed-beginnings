@@ -1,16 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Card } from '@/components/ui';
 import Badge from '@/components/ui/Badge';
 import { cn } from '@/utils/cn';
-import { ArrowRight, Sparkles, Send, Lightbulb, Zap, Play, MessageCircle, Infinity as InfinityIcon } from 'lucide-react';
+import { ArrowRight, Sparkles, Send, Lightbulb, Zap, Infinity as InfinityIcon } from 'lucide-react';
 import { useInView } from '@/hooks/useInView';
-import { contentTemplates } from '@/data/contentHooks';
-import { week2Reels } from '@/data/week2Reels';
-import { buildSeriesEpisodes } from '@/data/buildSeries';
 import HeroSlider from '@/components/HeroSlider';
-
-const WHATSAPP_DIRECT_CHAT = 'https://wa.me/923358380233';
+import { useHomepageSettings } from '@/hooks/useHomepageSettings';
 
 const SUGGESTIONS = [
   { text: 'I want to start a Shopify store', route: '/ai-tools' },
@@ -26,34 +22,9 @@ interface HomepageHeroProps {
 export default function HomepageHero({ className }: HomepageHeroProps) {
   const [idea, setIdea] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const [currentHookIndex, setCurrentHookIndex] = useState(0);
   const navigate = useNavigate();
   const { ref, isInView } = useInView({ threshold: 0.1, triggerOnce: true });
-
-  // Flatten all hooks from all tools for rotation, including Week 2 reel hooks and Build Series hooks
-  const contentHooks = contentTemplates.flatMap((template) =>
-    template.hooks.map((hook) => ({ hook, tool: template.tool, toolSlug: template.toolSlug }))
-  );
-  const week2Hooks = week2Reels.map((reel) => ({
-    hook: reel.hook,
-    tool: reel.toolName,
-    toolSlug: reel.toolSlug
-  }));
-  const buildSeriesHooks = buildSeriesEpisodes.map((ep) => ({
-    hook: ep.hook,
-    tool: `Build Series Ep. ${ep.episode}`,
-    toolSlug: 'content-templates'
-  }));
-  const allHooks = [...contentHooks, ...week2Hooks, ...buildSeriesHooks];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentHookIndex((prev) => (prev + 1) % allHooks.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [allHooks.length]);
-
-  const currentHook = allHooks[currentHookIndex];
+  const { settings } = useHomepageSettings();
 
   const handleSubmit = () => {
     if (idea.trim()) {
@@ -172,10 +143,15 @@ export default function HomepageHero({ className }: HomepageHeroProps) {
             <InfinityIcon className="h-4 w-4" data-icod-id="src_components_homepage_homepagehero_tsx_infinity_icon" />
             100% Free Forever
           </Badge>
-          <p
+          <h1
             className="text-lg md:text-xl font-bold text-foreground tracking-wide"
+            data-icod-id="src_pages_home_tsx_f98c">
+            {settings.hero.headline || 'MG Blessed Beginnings — 14 Free AI Tools for Online Sellers'}
+          </h1>
+          <p
+            className="text-base md:text-lg font-semibold text-muted-foreground tracking-wide mt-2"
             data-icod-id="src_components_homepage_homepagehero_tsx_free_subheadline">
-            Unlimited Use. No Sign-Up. No Credit Card.
+            {settings.hero.subheadline || 'Unlimited Use. No Sign-Up. No Credit Card.'}
           </p>
         </div>
       </div>
@@ -221,47 +197,6 @@ export default function HomepageHero({ className }: HomepageHeroProps) {
                 Explore AI Tools
               </Button>
             </Link>
-          </div>
-
-          {/* Rotating Hook Examples */}
-          <div
-            className="max-w-4xl mx-auto mb-12 animate-fade-up"
-            style={{ animationDelay: '420ms' }}
-            data-icod-id="src_components_homepage_homepagehero_tsx_rotating_hooks">
-            <Card
-              glass
-              hoverLift={false}
-              className="p-6 border-border/70 text-center relative overflow-hidden shadow-[0_6px_28px_rgba(0,0,0,0.4)]"
-              data-icod-id="src_components_homepage_homepagehero_tsx_hook_card">
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary via-accent to-primary opacity-90" data-icod-id="src_components_homepage_homepagehero_tsx_hook_accent" />
-              <p className="text-sm font-bold text-primary uppercase tracking-widest mb-3" data-icod-id="src_components_homepage_homepagehero_tsx_hook_label">
-                Content Hook of the Moment
-              </p>
-              <p
-                key={currentHookIndex}
-                className="text-xl md:text-2xl font-bold text-foreground mb-4 animate-fade-in min-h-[4rem] flex items-center justify-center"
-                data-icod-id="src_components_homepage_homepagehero_tsx_hook_text">
-                "{currentHook.hook}"
-              </p>
-              <div className="flex items-center justify-center gap-4" data-icod-id="src_components_homepage_homepagehero_tsx_hook_actions">
-                <span className="text-sm text-muted-foreground px-3 py-1.5 rounded-lg bg-secondary font-semibold" data-icod-id="src_components_homepage_homepagehero_tsx_hook_tool">
-                  {currentHook.tool}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const element = document.getElementById('how-it-works');
-                    if (element) {
-                      element.scrollIntoView({ behavior: 'smooth' });
-                    }
-                  }}
-                  className="text-sm text-primary hover:underline flex items-center gap-1.5 font-bold cursor-pointer bg-transparent border-none p-0"
-                  data-icod-id={`src_components_homepage_homepagehero_tsx_hook_demo_link_${currentHook.toolSlug}`}>
-                  <Play className="h-4 w-4" data-icod-id="src_components_homepage_homepagehero_tsx_play_icon" />
-                  Watch how it works
-                </button>
-              </div>
-            </Card>
           </div>
 
           {/* Interactive Business Idea Box with enhanced glassmorphism */}
@@ -360,56 +295,6 @@ export default function HomepageHero({ className }: HomepageHeroProps) {
             </Card>
           </div>
 
-          {/* WhatsApp Share CTA Card */}
-          <div
-            className="max-w-4xl mx-auto mt-8 animate-fade-up"
-            style={{ animationDelay: '500ms' }}
-            data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_cta_wrap">
-            <Card
-              className="relative overflow-hidden border-[#25D366]/40 bg-card/95 p-7 md:p-9"
-              data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_cta_card">
-              {/* Green accent bar at top */}
-              <div
-                className="absolute top-0 left-0 right-0 h-1.5 bg-[#25D366]"
-                data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_accent_bar" />
-              <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left" data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_cta_content">
-                <div
-                  className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#25D366]/20 shadow-[0_6px_20px_rgba(37,211,102,0.3)]"
-                  data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_icon_bg">
-                  <MessageCircle
-                    className="h-8 w-8 text-[#25D366]"
-                    data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_icon" />
-                </div>
-                <div className="flex-1" data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_text_wrap">
-                  <h3
-                    className="text-xl font-bold text-foreground mb-2"
-                    data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_title">
-                    Know someone who needs free AI tools?
-                  </h3>
-                  <p
-                    className="text-base text-muted-foreground font-medium"
-                    data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_desc">
-                    Share on WhatsApp 🎁 — help fellow entrepreneurs discover these tools
-                  </p>
-                </div>
-                <a
-                  href={WHATSAPP_DIRECT_CHAT}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_btn_link">
-                  <Button
-                    className="gap-2 bg-[#25D366] text-white hover:bg-[#20BD5A] border-none shadow-[0_6px_20px_rgba(37,211,102,0.5)] hover:shadow-[0_8px_32px_rgba(37,211,102,0.6)] min-w-[200px] font-bold"
-                    size="lg"
-                    data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_btn">
-                    <MessageCircle
-                      className="h-5 w-5"
-                      data-icod-id="src_components_homepage_homepagehero_tsx_whatsapp_btn_icon" />
-                    Share on WhatsApp
-                  </Button>
-                </a>
-              </div>
-            </Card>
-          </div>
         </div>
       </div>
     </section>

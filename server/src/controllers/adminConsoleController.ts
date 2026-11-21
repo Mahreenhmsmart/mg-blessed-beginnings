@@ -1317,7 +1317,7 @@ export async function getAllProducts(req: AuthRequest, res: Response, next: Next
 export async function updateProduct(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const { id } = req.params;
-    const { title, price, purchaseLink } = req.body;
+    const { title, price, buyUrl, description, image, category } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400).json({ success: false, error: 'Invalid product ID', statusCode: 400 });
@@ -1327,7 +1327,10 @@ export async function updateProduct(req: AuthRequest, res: Response, next: NextF
     const updateFields: Record<string, unknown> = {};
     if (title !== undefined) updateFields.title = title;
     if (price !== undefined) updateFields.price = price;
-    if (purchaseLink !== undefined) updateFields.purchaseLink = purchaseLink;
+    if (buyUrl !== undefined) updateFields.buyUrl = buyUrl;
+    if (description !== undefined) updateFields.description = description;
+    if (image !== undefined) updateFields.image = image;
+    if (category !== undefined) updateFields.category = category;
 
     const product = await Product.findByIdAndUpdate(id, { $set: updateFields }, { new: true, runValidators: true }).lean();
 
@@ -1337,6 +1340,51 @@ export async function updateProduct(req: AuthRequest, res: Response, next: NextF
     }
 
     res.json({ success: true, data: product });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function createProduct(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { title, price, description, image, category, buyUrl } = req.body;
+
+    if (!title || !price) {
+      res.status(400).json({ success: false, error: 'Title and price are required', statusCode: 400 });
+      return;
+    }
+
+    const product = await Product.create({
+      title,
+      price,
+      description: description || '',
+      image: image || '',
+      category: category || '',
+      buyUrl: buyUrl || '',
+    });
+
+    res.status(201).json({ success: true, data: product });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteProduct(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(400).json({ success: false, error: 'Invalid product ID', statusCode: 400 });
+      return;
+    }
+
+    const product = await Product.findByIdAndDelete(id);
+    if (!product) {
+      res.status(404).json({ success: false, error: 'Product not found', statusCode: 404 });
+      return;
+    }
+
+    res.json({ success: true, message: 'Product deleted successfully' });
   } catch (err) {
     next(err);
   }

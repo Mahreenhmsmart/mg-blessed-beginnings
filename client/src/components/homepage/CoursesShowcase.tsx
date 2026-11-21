@@ -92,24 +92,23 @@ export default function CoursesShowcase({ className }: CoursesShowcaseProps) {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             data-icod-id="src_components_homepage_coursesshowcase_tsx_grid">
             {COURSES.map((course, index) => {
-              const Icon = course.icon;
               return (
                 <Card
                   key={course.title}
                   gradientBorder
                   className="flex flex-col overflow-hidden group relative"
                   data-icod-id={`src_components_homepage_coursesshowcase_tsx_card_${index}`}>
-                  {/* Gradient header */}
-                  <div
-                    className="relative h-32 flex items-center justify-center overflow-hidden"
-                    style={{ background: course.gradient }}
-                    data-icod-id={`src_components_homepage_coursesshowcase_tsx_header_bg_${index}`}>
-                    <Icon
-                      className="h-12 w-12 text-white/90 drop-shadow-lg group-hover:scale-110 transition-transform duration-500"
-                      data-icod-id={`src_components_homepage_coursesshowcase_tsx_card_icon_${index}`} />
+                  {/* Course thumbnail */}
+                  <div className="relative" data-icod-id={`src_components_homepage_coursesshowcase_tsx_img_wrap_${index}`}>
+                    <img
+                      className="course-image"
+                      src={course.thumbnail}
+                      alt={course.title}
+                      loading="lazy"
+                      data-icod-id={`src_components_homepage_coursesshowcase_tsx_img_${index}`} />
                     {course.badge && (
                       <span
-                        className="absolute top-3 right-3 inline-flex items-center rounded-full bg-white/20 backdrop-blur-sm border border-white/30 px-3 py-1 text-xs font-bold text-white uppercase tracking-wider"
+                        className="absolute top-3 left-1/2 -translate-x-1/2 inline-flex items-center rounded-full bg-white/20 backdrop-blur-sm border border-white/30 px-3 py-1 text-xs font-bold text-white uppercase tracking-wider"
                         data-icod-id={`src_components_homepage_coursesshowcase_tsx_badge_${index}`}>
                         {course.badge}
                       </span>

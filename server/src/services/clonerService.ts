@@ -1,8 +1,14 @@
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { URL } from 'url';
 import Clone from '../models/Clone';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const CLONE_DIR = path.join(process.cwd(), 'uploads', 'clones');
 
 /**
  * Options for cloning a website.
@@ -23,10 +29,10 @@ const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds (headless browser needs more tim
 const MAX_IMAGE_EMBED_BYTES = 51200; // 50 KB for base64 embedding
 
 /**
- * Returns the default clones directory (server/clones).
+ * Returns the default clones directory (uploads/clones relative to cwd).
  */
 function getDefaultClonesDir(): string {
-  return path.resolve(process.cwd(), 'clones');
+  return CLONE_DIR;
 }
 
 // Track ensured directories to avoid repeated mkdir calls
@@ -612,30 +618,46 @@ export async function cloneWebsite(url: string, options: CloneOptions = {}): Pro
   const filePath = path.join(cloneDir, 'index.html');
   fs.writeFileSync(filePath, processedHtml, 'utf-8');
 
+  // Verify file exists on disk before saving to database
+  if (!fs.existsSync(filePath)) {
+    fs.rmSync(cloneDir, { recursive: true, force: true });
+    throw new Error('Clone could not be saved, please try again.');
+  }
+
   const bytes = Buffer.byteLength(processedHtml, 'utf-8');
-  // Store relative path from server root for retrieval
-  const relativePath = path.relative(path.resolve(process.cwd()), filePath);
+  // Store relative path from clones directory for retrieval
+  const relativePath = path.relative(getDefaultClonesDir(), filePath);
 
-  const cloneDoc = await Clone.create({
-    id,
-    source: url,
-    bytes,
-    filePath: relativePath,
-  });
+  // Normalize URL for dedup: trim, strip trailing slash, lowercase
+  const normalizedUrl = url.trim().replace(/\/$/, '').toLowerCase();
 
-  return { id, source: url, bytes, createdAt: cloneDoc.createdAt, warning };
+  // Also check for the variant WITH trailing slash to catch legacy rows
+  // that were stored before normalization was added.
+  const withTrailingSlash = normalizedUrl + '/';
+
+  // Upsert by normalized source URL — re-save updates existing, never duplicates.
+  // Use $or to match both normalized and with-trailing-slash variants so we
+  // catch any legacy rows stored before normalization was applied.
+  const cloneDoc = await Clone.findOneAndUpdate(
+    { $or: [{ source: normalizedUrl }, { source: withTrailingSlash }] },
+    { $set: { id, source: normalizedUrl, bytes, filePath: relativePath, status: 'SAVED', createdAt: new Date() } },
+    { upsert: true, new: true },
+  );
+
+  return { id: cloneDoc.id, source: cloneDoc.source, bytes: cloneDoc.bytes, createdAt: cloneDoc.createdAt, warning };
 }
 
 /**
  * Returns all clones sorted by creation date descending.
  */
-export async function listClones(): Promise<{ id: string; source: string; bytes: number; createdAt: Date }[]> {
+export async function listClones(): Promise<{ id: string; source: string; bytes: number; createdAt: Date; status: string }[]> {
   const clones = await Clone.find().sort({ createdAt: -1 }).lean();
   return clones.map((c) => ({
     id: c.id,
     source: c.source,
     bytes: c.bytes,
     createdAt: c.createdAt,
+    status: c.status || 'SAVED',
   }));
 }
 
@@ -650,7 +672,8 @@ export async function getCloneById(id: string): Promise<{ filePath: string; sour
 
 /**
  * Returns the absolute path for a clone's file.
+ * Resolves relative paths against the default clones directory.
  */
 export function getCloneFilePath(relativePath: string): string {
-  return path.resolve(process.cwd(), relativePath);
+  return path.resolve(getDefaultClonesDir(), relativePath);
 }

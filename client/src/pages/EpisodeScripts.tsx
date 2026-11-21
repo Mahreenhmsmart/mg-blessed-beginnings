@@ -17,8 +17,8 @@ const episodes: EpisodeData[] = [
   {
     episode: 1,
     title: 'An AI Tool for Sellers (How It Started)',
-    script: "I was tired of watching online sellers struggle with content, writing descriptions, finding hashtags, doing SEO. It took hours. So I built something, an AI toolkit that does it all in seconds. 13 free tools, one dashboard, free forever. No signup, no credit card. This is MG Blessed Beginnings, and this is how it started.",
-    captions: ['IT TOOK HOURS', '13 FREE TOOLS — ONE DASHBOARD', 'FREE FOREVER — NO SIGNUP'],
+    script: "I was tired of watching online sellers struggle with content, writing descriptions, finding hashtags, doing SEO. It took hours. So I built something, an AI toolkit that does it all in seconds. 14 free tools, one dashboard, free forever. No signup, no credit card. This is MG Blessed Beginnings, and this is how it started.",
+    captions: ['IT TOOK HOURS', '14 FREE TOOLS — ONE DASHBOARD', 'FREE FOREVER — NO SIGNUP'],
     hashtags: ['#AITools', '#OnlineSeller', '#SmallBusiness', '#FreeTools', '#MGblessedbeginnings'],
     videoUrl: 'https://drive.google.com/file/d/1WIzjjZ5h6W5wHzfdPSiKyobzGfvCYZn-/preview',
   },
@@ -57,7 +57,7 @@ const episodes: EpisodeData[] = [
   {
     episode: 6,
     title: 'I Finally Launched MG Blessed Beginnings',
-    script: "I finally launched MG Blessed Beginnings. Here's how you use it. Step 1, open mgblessed.icod.ai. Step 2, pick any of the 13 free tools. Step 3, type a few words and get your result in seconds. No sign-up, no credit card, free forever. This is MG Blessed Beginnings, built for online sellers like you.",
+    script: "I finally launched MG Blessed Beginnings. Here's how you use it. Step 1, open mgblessed.icod.ai. Step 2, pick any of the 14 free tools. Step 3, type a few words and get your result in seconds. No sign-up, no credit card, free forever. This is MG Blessed Beginnings, built for online sellers like you.",
     captions: ['STEP 1 — OPEN THE SITE', 'STEP 2 — PICK A TOOL', 'STEP 3 — GET IT IN SECONDS'],
     hashtags: ['#LaunchDay', '#AITools', '#FreeTools', '#OnlineSeller', '#MGblessedbeginnings'],
     videoUrl: 'https://drive.google.com/file/d/1tGo1ZOtXpzNPwolewrYzCAG5xMwQ1Tl6/preview',
@@ -65,7 +65,7 @@ const episodes: EpisodeData[] = [
   {
     episode: 7,
     title: '100 People Tested My AI App',
-    script: "100 people tested my AI app. Here's how you can try it, too. Step 1. Pick any of the 13 free tools. Step 2. Type a few words about your business. Step 3. Get your result in seconds. Free forever, no sign-up. Now it's your turn. MG Blessed Beginnings. mgblessed.icod.ai",
+    script: "100 people tested my AI app. Here's how you can try it, too. Step 1. Pick any of the 14 free tools. Step 2. Type a few words about your business. Step 3. Get your result in seconds. Free forever, no sign-up. Now it's your turn. MG Blessed Beginnings. mgblessed.icod.ai",
     captions: ['STEP 1 — PICK A TOOL', 'STEP 2 — TYPE A FEW WORDS', 'STEP 3 — GET IT IN SECONDS'],
     hashtags: ['#AITools', '#OnlineSeller', '#TryItFree', '#SmallBusiness', '#MGblessedbeginnings'],
     videoUrl: 'https://drive.google.com/file/d/1qZWCUWapSLZCo7iTh8DPfx0DjNxtExRA/preview',

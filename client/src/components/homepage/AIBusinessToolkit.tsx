@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
-import { Card, Button, Spinner, Badge, Skeleton } from '@/components/ui';
+import { Card, Button, Badge, Skeleton } from '@/components/ui';
 import { cn } from '@/utils/cn';
 import type { AITool } from '@/types';
-import { ArrowRight, Sparkles, FileText, Search, Hash, Calculator, Users, MessageSquare, BarChart3, Image as ImageIcon, BookOpen, Store, Palette, Zap, TrendingUp, Activity, Megaphone, Link2, Infinity as InfinityIcon } from 'lucide-react';
+import { ArrowRight, Sparkles, FileText, Search, Hash, Calculator, Users, MessageSquare, BarChart3, Image as ImageIcon, BookOpen, Store, Palette, Zap, Link2, Infinity as InfinityIcon } from 'lucide-react';
 import { useInView } from '@/hooks/useInView';
 import { FORCE_COMING_SOON_SLUGS, getEffectiveStatus } from '@/utils/toolStatusOverrides';
+import { useHomepageSettings } from '@/hooks/useHomepageSettings';
 
 interface AIBusinessToolkitProps {
   tools: AITool[];
@@ -38,7 +39,7 @@ const TOOL_IMAGES: Record<string, string> = {
   'Hashtag Generator': 'https://drive.google.com/thumbnail?id=1P6W8B1M3bEt2LigfVrikZ-CDsxGmmscu&sz=w1920',
   'Keyword Research Tool': 'https://drive.google.com/thumbnail?id=1Mev8FX2cDFOEqLqdZWwHCByMh1k1Q-Mc&sz=w1920',
   'Listing Health Score': 'https://drive.google.com/thumbnail?id=1veq-WanQstJU0P39P4f1kdDm2lxIv-38&sz=w1920',
-  'Listing Optimizer': 'https://drive.google.com/thumbnail?id=1XP4sOhfZkVaa4zRV0JjqVU2_Ktcz7pmz&sz=w1920',
+  'Listing Optimizer': 'https://drive.google.com/thumbnail?id=1XP4sOhfZkVaa4zRV0JrqVU2_Ktcz7pmz&sz=w1920',
   'Product Description Generator': 'https://drive.google.com/thumbnail?id=1DHnaw_YJmaeC_a86sb_ohySPA_T4b6Lb&sz=w1920',
   'Profit Calculator': 'https://drive.google.com/thumbnail?id=1daUTE2rgq9C7lJMJLtsaEDCXyOD_ruxw&sz=w1920',
   'Prompt Library': 'https://drive.google.com/thumbnail?id=1oixTHNGN2srEKnnvljWkCC7nZ1bbUIUL&sz=w1920',
@@ -58,6 +59,7 @@ const TOOL_COLORS = [
 
 export default function AIBusinessToolkit({ tools, status, className }: AIBusinessToolkitProps) {
   const { ref, isInView } = useInView({ threshold: 0.1, triggerOnce: true });
+  const { settings } = useHomepageSettings();
 
   // Show only live tools OR force-coming-soon tools, deduplicating by canonical slug and name.
   // A previous seed may have created a 'price-calculator' entry alongside
@@ -126,13 +128,13 @@ export default function AIBusinessToolkit({ tools, status, className }: AIBusine
                 className="bg-clip-text text-transparent"
                 style={{ backgroundImage: 'linear-gradient(135deg, rgb(var(--primary)) 0%, rgb(var(--accent)) 100%)' }}
                 data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_d6ed">
-                Business Toolkit
+                {settings.aiReadinessPreview.sectionTitle || 'Business Toolkit'}
               </span>
             </h2>
             <p
               className="text-lg text-muted-foreground"
               data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_54af">
-              Free AI tools for content, marketing, SEO, eCommerce & online business.
+              {settings.aiReadinessPreview.description || 'Free AI tools for content, marketing, SEO, eCommerce & online business.'}
             </p>
           </div>
           <Link
@@ -197,17 +199,12 @@ export default function AIBusinessToolkit({ tools, status, className }: AIBusine
                     data-icod-id={`src_components_homepage_aibusinesstoolkit_tsx_ffe1_${tool._id}`}>
                     {/* Full-width thumbnail image */}
                     {imageUrl && (
-                      <div
-                        className="w-full shrink-0 overflow-hidden"
-                        style={{ height: '140px', borderRadius: '22px 22px 0 0' }}
-                        data-icod-id={`src_components_homepage_aibusinesstoolkit_tsx_img_wrap_${tool._id}`}>
-                        <img
-                          src={imageUrl}
-                          alt={tool.name}
-                          className="h-full w-full object-cover"
-                          loading="lazy"
-                          data-icod-id={`src_components_homepage_aibusinesstoolkit_tsx_img_${tool._id}`} />
-                      </div>
+                      <img
+                        className="tool-image"
+                        src={imageUrl}
+                        alt={tool.name}
+                        loading="lazy"
+                        data-icod-id={`src_components_homepage_aibusinesstoolkit_tsx_img_${tool._id}`} />
                     )}
                     {/* Gradient accent on hover */}
                     <div
@@ -296,55 +293,7 @@ export default function AIBusinessToolkit({ tools, status, className }: AIBusine
           )}
         </div>
 
-        {/* Social Proof Section */}
-        <div className="mt-16 pt-12 border-t border-border/30" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_social_proof">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stats_grid">
-            <div className="p-6 rounded-xl bg-secondary/50 border border-border/30" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_1">
-              <div className="flex items-center justify-center gap-2 mb-2" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_1_header">
-                <Sparkles className="h-5 w-5 text-primary" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_1_icon" />
-                <span className="text-xl font-bold text-foreground" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_1_number">100%</span>
-              </div>
-              <p className="text-sm text-muted-foreground" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_1_label">Free Forever</p>
-            </div>
 
-            <div className="p-6 rounded-xl bg-secondary/50 border border-border/30" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_2">
-              <div className="flex items-center justify-center gap-2 mb-2" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_2_header">
-                <Zap className="h-5 w-5 text-accent" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_2_icon" />
-                <span className="text-xl font-bold text-foreground" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_2_number">No Sign-Up</span>
-              </div>
-              <p className="text-sm text-muted-foreground" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_2_label">Required</p>
-            </div>
-
-            <div className="p-6 rounded-xl bg-secondary/50 border border-border/30" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_3">
-              <div className="flex items-center justify-center gap-2 mb-2" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_3_header">
-                <Activity className="h-5 w-5 text-primary" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_3_icon" />
-                <span className="text-xl font-bold text-foreground" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_3_number">15</span>
-              </div>
-              <p className="text-sm text-muted-foreground" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_3_label">Free AI Tools</p>
-            </div>
-
-            <div className="p-6 rounded-xl bg-secondary/50 border border-border/30" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_4">
-              <div className="flex items-center justify-center gap-2 mb-2" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_4_header">
-                <Store className="h-5 w-5 text-warning" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_4_icon" />
-                <span className="text-xl font-bold text-foreground" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_4_number">Built for</span>
-              </div>
-              <p className="text-sm text-muted-foreground" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_stat_4_label">Online Sellers</p>
-            </div>
-          </div>
-
-          {/* Join CTA */}
-          <div className="mt-8 text-center" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_join_cta">
-            <p className="text-muted-foreground mb-4" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_join_text">
-              Start using these free AI tools for your online business
-            </p>
-            <Link to="/content-templates" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_templates_link">
-              <Button variant="outline" size="sm" className="gap-2" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_templates_btn">
-                <TrendingUp className="h-4 w-4" data-icod-id="src_components_homepage_aibusinesstoolkit_tsx_trending_icon" />
-                Get Content Templates
-              </Button>
-            </Link>
-          </div>
-        </div>
       </div>
     </section>
   );

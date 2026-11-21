@@ -91,7 +91,7 @@ export default function PromoVideo({ className }: PromoVideoProps) {
           className="mt-4 text-center text-sm sm:text-base text-muted-foreground"
           data-icod-id="src_components_homepage_promovideo_tsx_caption"
         >
-          15 free AI tools. Free forever. No sign-up.
+          14 free AI tools. Free forever. No sign-up.
         </p>
       </div>
     </section>

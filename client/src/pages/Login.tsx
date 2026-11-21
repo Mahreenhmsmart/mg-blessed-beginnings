@@ -151,9 +151,9 @@ export default function Login() {
               className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl shadow-[0_4px_16px_rgba(109,0,217,0.3)] transition-transform duration-[400ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 overflow-hidden"
               data-icod-id="src_pages_login_tsx_df3a">
               <img
-                src="https://drive.google.com/thumbnail?id=17_eHHL7Lgz4XxCm2NlcyhqW4PLEFUTxr&sz=w1920"
+                className="mg-logo"
+                src="/assets/1795177902729_mg-logo-new-transparent-upload.webp"
                 alt="MG Blessed Beginnings"
-                className="h-full w-full object-contain"
                 data-icod-id="src_pages_login_tsx_logo_img" />
             </div>
           </Link>
@@ -311,6 +311,7 @@ export default function Login() {
         </p>
       </div>
     </div>
+      <style data-icod-id="src_pages_login_tsx_8f7d">{`.mg-logo { height: 48px; width: auto; display: block; }`}</style>
     </>
   );
 }

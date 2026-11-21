@@ -19,26 +19,36 @@ export default function HeroSlider({
   className,
 }: HeroSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  // Timer key changes on user interaction to force useEffect to restart the interval
+  const [timerKey, setTimerKey] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
   const goTo = useCallback(
     (index: number) => {
       setCurrentIndex(((index % slides.length) + slides.length) % slides.length);
+      setTimerKey((k) => k + 1); // Reset timer on manual navigation
     },
     [slides.length],
   );
 
-  const goNext = useCallback(() => goTo(currentIndex + 1), [currentIndex, goTo]);
-  const goPrev = useCallback(() => goTo(currentIndex - 1), [currentIndex, goTo]);
+  const goNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % slides.length);
+    setTimerKey((k) => k + 1); // Reset timer on manual navigation
+  }, [slides.length]);
 
-  // Auto-rotate
+  const goPrev = useCallback(() => {
+    setCurrentIndex((prev) => ((prev - 1) + slides.length) % slides.length);
+    setTimerKey((k) => k + 1); // Reset timer on manual navigation
+  }, [slides.length]);
+
+  // Auto-rotate: restarts whenever timerKey changes (user clicked)
   useEffect(() => {
-    if (isPaused) return;
-    const timer = setInterval(goNext, intervalMs);
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % slides.length);
+    }, intervalMs);
     return () => clearInterval(timer);
-  }, [isPaused, goNext, intervalMs]);
+  }, [intervalMs, timerKey, slides.length]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -65,9 +75,11 @@ export default function HeroSlider({
     const diff = touchStartX.current - touchEndX.current;
     const threshold = 50;
     if (diff > threshold) {
-      goNext();
+      setCurrentIndex((prev) => (prev + 1) % slides.length);
+      setTimerKey((k) => k + 1);
     } else if (diff < -threshold) {
-      goPrev();
+      setCurrentIndex((prev) => ((prev - 1) + slides.length) % slides.length);
+      setTimerKey((k) => k + 1);
     }
     touchStartX.current = null;
     touchEndX.current = null;
@@ -77,8 +89,6 @@ export default function HeroSlider({
     <div
       className={cn('relative w-full overflow-hidden', className)}
       style={{ aspectRatio: '1920 / 1080' }}
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

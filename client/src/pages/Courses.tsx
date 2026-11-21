@@ -4,12 +4,17 @@ import SEOHead from '@/components/SEOHead';
 import AdSenseSlot from '@/components/AdSenseSlot';
 import { GraduationCap, ArrowRight, BookOpen, Video, Award } from 'lucide-react';
 import { SchemaInjector, PAGE_META } from '@/seo';
+import { useSeo } from '@/components/Seo';
 import { useCurrencyFormatter } from '@/hooks/useCurrencyFormatter';
 import { COURSES } from '@/data/courses';
 
 const coursesMeta = PAGE_META['/courses'];
 
 export default function Courses() {
+  useSeo(
+    'Courses | MG Blessed Beginnings',
+    'Learn AI, e-commerce, eBay, Amazon, YouTube and more — paid courses from MG Blessed Beginnings.',
+  );
   const { formatPrice } = useCurrencyFormatter();
 
   return (
@@ -171,24 +176,23 @@ export default function Courses() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto"
             data-icod-id="src_pages_courses_tsx_courses_grid">
             {COURSES.map((course, index) => {
-              const Icon = course.icon;
               return (
                 <Card
                   key={course.title}
                   gradientBorder
                   className="flex flex-col overflow-hidden group relative"
                   data-icod-id={`src_pages_courses_tsx_course_card_${index}`}>
-                  {/* Gradient header */}
-                  <div
-                    className="relative h-32 flex items-center justify-center overflow-hidden"
-                    style={{ background: course.gradient }}
-                    data-icod-id={`src_pages_courses_tsx_course_header_${index}`}>
-                    <Icon
-                      className="h-12 w-12 text-white/90 drop-shadow-lg group-hover:scale-110 transition-transform duration-500"
-                      data-icod-id={`src_pages_courses_tsx_course_icon_${index}`} />
+                  {/* Course thumbnail */}
+                  <div className="relative" data-icod-id={`src_pages_courses_tsx_course_img_wrap_${index}`}>
+                    <img
+                      className="course-image"
+                      src={course.thumbnail}
+                      alt={course.title}
+                      loading="lazy"
+                      data-icod-id={`src_pages_courses_tsx_course_img_${index}`} />
                     {course.badge && (
                       <span
-                        className="absolute top-3 right-3 inline-flex items-center rounded-full bg-white/20 backdrop-blur-sm border border-white/30 px-3 py-1 text-xs font-bold text-white uppercase tracking-wider"
+                        className="absolute top-3 left-1/2 -translate-x-1/2 inline-flex items-center rounded-full bg-white/20 backdrop-blur-sm border border-white/30 px-3 py-1 text-xs font-bold text-white uppercase tracking-wider"
                         data-icod-id={`src_pages_courses_tsx_course_badge_${index}`}>
                         {course.badge}
                       </span>

@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Globe, Download, ExternalLink, AlertCircle, Copy, Check, Clock, HardDrive, Hash, Info, Shield, FileCode, Image as ImageIcon, XCircle, Link2, AlertTriangle } from 'lucide-react';
-import { Button, Input, Card, Spinner, Alert } from '@/components/ui';
+import { useState, useEffect, useRef } from 'react';
+import { Globe, Download, ExternalLink, AlertCircle, Copy, Check, Clock, HardDrive, Hash, Info, Shield, FileCode, Image as ImageIcon, XCircle, Link2, AlertTriangle, FileArchive, RefreshCw } from 'lucide-react';
+import { Button, Input, Card, Spinner, Alert, ToastContainer } from '@/components/ui';
 import { cn } from '@/utils/cn';
 import SEOHead from '@/components/SEOHead';
-import { cloneWebsite, getRecentClones, getPreviewUrl, getDownloadUrl, type CloneResponse, type RecentCloneItem } from '@/services/clonerService';
+import { cloneWebsite, getRecentClones, getPreviewUrl, getDownloadUrl, downloadCloneAsZip, type CloneResponse, type RecentCloneItem } from '@/services/clonerService';
 import { SchemaInjector, PAGE_META } from '@/seo';
 import apiClient from '@/services/apiClient';
 import { getWebsiteClonerContent } from '@/services/pageContentService';
+import { useAppDispatch } from '@/store/hooks';
+import { addToast } from '@/store/slices/uiSlice';
 
 const websiteClonerMeta = PAGE_META['/website-cloner'];
 
@@ -42,9 +44,12 @@ export default function WebsiteCloner() {
   const [clonesLoading, setClonesLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [downloadStatus, setDownloadStatus] = useState<{ id: string; message: string; type: 'success' | 'error' } | null>(null);
+  const [zipLoadingId, setZipLoadingId] = useState<string | null>(null);
   const pageContent = getWebsiteClonerContent();
+  const dispatch = useAppDispatch();
+  const topRef = useRef<HTMLDivElement>(null);
 
-  // Load recent clones on mount
+  // Load recent clones on mount and check for reclone query param
   useEffect(() => {
     let cancelled = false;
     async function loadClones() {
@@ -58,6 +63,15 @@ export default function WebsiteCloner() {
       }
     }
     loadClones();
+
+    // Check for ?reclone= query parameter (from admin Re-clone button)
+    const params = new URLSearchParams(window.location.search);
+    const recloneUrl = params.get('reclone');
+    if (recloneUrl) {
+      setUrl(recloneUrl);
+      topRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+
     return () => { cancelled = true; };
   }, []);
 
@@ -94,8 +108,27 @@ export default function WebsiteCloner() {
     });
   };
 
+  const handleDownloadZip = async (id: string, sourceUrl: string) => {
+    setZipLoadingId(id);
+    try {
+      await downloadCloneAsZip(id, sourceUrl);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'This clone file is no longer available. Please re-clone the website.';
+      dispatch(addToast({ message, variant: 'error' }));
+    } finally {
+      setZipLoadingId(null);
+    }
+  };
+
+  const handleReclone = (sourceUrl: string) => {
+    setUrl(sourceUrl);
+    topRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <>
+      <ToastContainer data-icod-id="src_pages_websitecloner_tsx_0030" />
+      <div ref={topRef} data-icod-id="src_pages_websitecloner_tsx_bb8d" />
       <SEOHead
         title={websiteClonerMeta.title}
         description={websiteClonerMeta.description}
@@ -336,6 +369,24 @@ export default function WebsiteCloner() {
                     <Download className="h-4 w-4" data-icod-id="src_pages_websitecloner_tsx_9fcd" />
                     Download
                   </a>
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadZip(result.id, result.source)}
+                    disabled={zipLoadingId === result.id}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold border transition-all duration-200 disabled:opacity-50"
+                    style={{
+                      borderColor: 'rgb(var(--border))',
+                      color: 'rgb(var(--foreground))',
+                      background: 'rgb(var(--surface))',
+                    }}
+                    data-icod-id="src_pages_websitecloner_tsx_zipbtn_result">
+                    {zipLoadingId === result.id ? (
+                      <Spinner size="sm" data-icod-id="src_pages_websitecloner_tsx_zipspinner_result" />
+                    ) : (
+                      <FileArchive className="h-4 w-4" data-icod-id="src_pages_websitecloner_tsx_zipicon_result" />
+                    )}
+                    Download ZIP
+                  </button>
                 </div>
               </div>
             )}
@@ -702,34 +753,76 @@ export default function WebsiteCloner() {
                     <div
                       className="flex items-center gap-2 flex-shrink-0"
                       data-icod-id={`src_pages_websitecloner_tsx_923b_${item.id}`}>
-                      <a
-                        href={getPreviewUrl(item.id)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-                        style={{
-                          background: 'rgb(var(--primary) / 0.12)',
-                          color: 'rgb(var(--primary-hover))',
-                        }}
-                        data-icod-id={`src_pages_websitecloner_tsx_3f00_${item.id}`}>
-                        <ExternalLink
-                          className="h-3.5 w-3.5"
-                          data-icod-id={`src_pages_websitecloner_tsx_19b2_${item.id}`} />
-                        Preview
-                      </a>
-                      <a
-                        href={getDownloadUrl(item.id)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors"
-                        style={{
-                          borderColor: 'rgb(var(--border))',
-                          color: 'rgb(var(--muted-foreground))',
-                        }}
-                        data-icod-id={`src_pages_websitecloner_tsx_7db2_${item.id}`}>
-                        <Download
-                          className="h-3.5 w-3.5"
-                          data-icod-id={`src_pages_websitecloner_tsx_f3e1_${item.id}`} />
-                        Download
-                      </a>
+                      {item.status === 'FILE_MISSING' ? (
+                        <>
+                          <span
+                            className="text-xs font-semibold px-2 py-1 rounded"
+                            style={{ color: 'rgb(var(--warning))', background: 'rgb(var(--warning) / 0.1)' }}
+                            data-icod-id={`src_pages_websitecloner_tsx_missing_${item.id}`}>
+                            File missing — please re-clone
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleReclone(item.source)}
+                            data-icod-id={`src_pages_websitecloner_tsx_reclonebtn_${item.id}`}>
+                            <RefreshCw
+                              className="h-3.5 w-3.5 mr-1"
+                              data-icod-id={`src_pages_websitecloner_tsx_6578_${item.id}`} />
+                            Re-clone
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <a
+                            href={getPreviewUrl(item.id)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                            style={{
+                              background: 'rgb(var(--primary) / 0.12)',
+                              color: 'rgb(var(--primary-hover))',
+                            }}
+                            data-icod-id={`src_pages_websitecloner_tsx_3f00_${item.id}`}>
+                            <ExternalLink
+                              className="h-3.5 w-3.5"
+                              data-icod-id={`src_pages_websitecloner_tsx_19b2_${item.id}`} />
+                            Preview
+                          </a>
+                          <a
+                            href={getDownloadUrl(item.id)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors"
+                            style={{
+                              borderColor: 'rgb(var(--border))',
+                              color: 'rgb(var(--muted-foreground))',
+                            }}
+                            data-icod-id={`src_pages_websitecloner_tsx_7db2_${item.id}`}>
+                            <Download
+                              className="h-3.5 w-3.5"
+                              data-icod-id={`src_pages_websitecloner_tsx_f3e1_${item.id}`} />
+                            Download
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => handleDownloadZip(item.id, item.source)}
+                            disabled={zipLoadingId === item.id}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors disabled:opacity-50"
+                            style={{
+                              borderColor: 'rgb(var(--border))',
+                              color: 'rgb(var(--muted-foreground))',
+                            }}
+                            data-icod-id={`src_pages_websitecloner_tsx_zipbtn_${item.id}`}>
+                            {zipLoadingId === item.id ? (
+                              <Spinner size="sm" data-icod-id={`src_pages_websitecloner_tsx_zipspinner_${item.id}`} />
+                            ) : (
+                              <FileArchive
+                                className="h-3.5 w-3.5"
+                                data-icod-id={`src_pages_websitecloner_tsx_zipicon_${item.id}`} />
+                            )}
+                            ZIP
+                          </button>
+                        </>
+                      )}
                     </div>
                   </Card>
                 ))}

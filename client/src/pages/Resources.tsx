@@ -111,13 +111,20 @@ export default function Resources() {
     loadResources();
   }, []);
 
-  // Combine API resources with static resources if API is empty
+  // Titles that belong exclusively to the "MG Blessed Beginnings Resource Library"
+  // section below. Filter them out of "Available Resources" so each appears once.
+  const mgGuideTitles: Set<string> = new Set(MG_GUIDES.map((g) => g.title));
+
+  // Combine API resources with static resources if API is empty,
+  // excluding any API resources whose title matches an MG guide.
   const displayResources = apiResources.length > 0 
-    ? apiResources.map(r => ({
-        title: r.title,
-        description: r.description,
-        resourceType: mapResourceType(r.type),
-      }))
+    ? apiResources
+        .filter((r) => !mgGuideTitles.has(r.title))
+        .map(r => ({
+          title: r.title,
+          description: r.description,
+          resourceType: mapResourceType(r.type),
+        }))
     : staticResources;
 
   const structuredData = {

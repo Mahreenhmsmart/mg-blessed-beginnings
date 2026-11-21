@@ -6,6 +6,10 @@ export interface IThirtyDayPlan extends Document {
   description: string;
   tasks: string[];
   resources: string[];
+  phase: string;
+  icon: string;
+  tip: string;
+  category: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,6 +21,10 @@ const thirtyDayPlanSchema = new Schema<IThirtyDayPlan>(
     description: { type: String, required: true },
     tasks: [{ type: String, trim: true }],
     resources: [{ type: String, trim: true }],
+    phase: { type: String, default: '' },
+    icon: { type: String, default: '' },
+    tip: { type: String, default: '' },
+    category: { type: String, default: '' },
   },
   { timestamps: true }
 );

@@ -7,12 +7,17 @@ import BlogCard from '@/components/BlogCard';
 import AdSenseSlot from '@/components/AdSenseSlot';
 import { Search } from 'lucide-react';
 import { SchemaInjector, PAGE_META } from '@/seo';
+import { useSeo } from '@/components/Seo';
 
 const blogMeta = PAGE_META['/blog'];
 
 const POSTS_PER_PAGE = 9;
 
 export default function Blog() {
+  useSeo(
+    'Blog | MG Blessed Beginnings',
+    'Modest fashion and online selling guides from MG Blessed Beginnings.',
+  );
   const dispatch = useAppDispatch();
   const { posts: rawPosts, status } = useAppSelector((state) => state.blog);
   // Defensive guard against null/undefined posts

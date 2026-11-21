@@ -38,6 +38,7 @@ import {
   DollarSign,
   Copy,
   UserCircle,
+  ShoppingBag,
 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { Button, Card, Badge, Spinner, Modal, Input, Field, EmptyState, Alert } from '@/components/ui';
@@ -45,6 +46,7 @@ import Pagination from '@/components/ui/Pagination';
 import DashboardCard from '@/components/dashboard/DashboardCard';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import type { RootState } from '@/store/store';
+import { addToast } from '@/store/slices/uiSlice';
 import {
   fetchAdminStats,
   fetchApiLogStats,
@@ -84,6 +86,7 @@ import {
 import { adminApiService } from '@/services/adminService';
 import apiClient from '@/services/apiClient';
 import PagesEditor from '@/components/admin/PagesEditor';
+import { MG_REVIEWS, type Review } from '@/components/homepage/ClientReviews';
 import DashboardPricing from './DashboardPricing';
 import DashboardCloneWebsite from './DashboardCloneWebsite';
 import DashboardContact from './DashboardContact';
@@ -153,7 +156,9 @@ type TabId =
   | 'about-founder'
   | 'clone-website'
   | 'thirty-day-plan'
+  | 'shop'
   | 'reviews'
+  | 'homepage'
   | 'api-monitor'
   | 'settings';
 
@@ -188,11 +193,13 @@ const TABS: TabDef[] = [
   { id: 'videos', label: 'Videos', icon: Video },
   { id: 'pages', label: 'Pages', icon: FileText },
   { id: 'pricing', label: 'Pricing', icon: DollarSign },
+  { id: 'shop', label: 'Shop', icon: ShoppingBag },
   { id: 'portfolio', label: 'Portfolio', icon: FolderOpen },
   { id: 'about-founder', label: 'About/Founder', icon: UserCircle },
   { id: 'clone-website', label: 'Clone a Website', icon: Copy },
   { id: 'thirty-day-plan', label: '30-Day Plan', icon: CalendarClock },
   { id: 'reviews', label: 'Reviews', icon: Star },
+  { id: 'homepage', label: 'Homepage', icon: Globe },
   { id: 'api-monitor', label: 'API Monitor', icon: Activity },
   { id: 'settings', label: 'Settings', icon: SettingsIcon },
 ];
@@ -256,7 +263,9 @@ export default function AdminConsole() {
       case 'about-founder': return <AboutFounderTab data-icod-id="admin_founder_tab" />;
       case 'clone-website': return <DashboardCloneWebsite data-icod-id="admin_clone_tab" />;
       case 'thirty-day-plan': return <ThirtyDayPlanTab data-icod-id="admin_thirtydayplan_tab" />;
+      case 'shop': return <ShopTab data-icod-id="admin_shop_tab" />;
       case 'reviews': return <ReviewsTab data-icod-id="admin_reviews_tab" />;
+      case 'homepage': return <HomepageTab data-icod-id="admin_homepage_tab" />;
       case 'settings': return <SettingsTab data-icod-id="src_pages_dashboard_adminconsole_tsx_6dc3" />;
       default: return null;
     }
@@ -269,7 +278,7 @@ export default function AdminConsole() {
         <div className="flex items-center gap-3" data-icod-id="admin_console_header_left">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden" data-icod-id="admin_console_icon_wrap">
             <img
-              src="https://drive.google.com/thumbnail?id=17_eHHL7Lgz4XxCm2NlcyhqW4PLEFUTxr&sz=w1920"
+              src="/assets/1795177902729_mg-logo-new-transparent-upload.webp"
               alt="MG"
               className="h-full w-full object-contain"
               data-icod-id="admin_console_logo_img" />
@@ -340,7 +349,7 @@ function OverviewTab({
     { label: 'Active Subs', value: stats?.activeSubscriptions ?? 0, icon: CheckCircle2, color: 'text-success', tab: 'subscriptions' as TabId },
     { label: 'Blog Posts', value: stats?.totalBlogPosts ?? 0, icon: FileText, color: 'text-primary', tab: 'blog' as TabId },
     { label: 'Courses', value: stats?.totalCourses ?? 0, icon: BookOpen, color: 'text-accent-foreground', tab: 'courses' as TabId },
-    { label: 'Resources', value: stats?.totalResources ?? 0, icon: Download, color: 'text-primary', tab: 'resources' as TabId },
+    { label: 'Resources', value: (stats?.totalResources ?? 0) + MG_GUIDES_ADMIN.length, icon: Download, color: 'text-primary', tab: 'resources' as TabId },
     { label: 'Referrals', value: stats?.totalReferrals ?? 0, icon: Gift, color: 'text-success', tab: 'referrals' as TabId },
     { label: 'Newsletter', value: stats?.totalNewsletterSubscribers ?? 0, icon: Newspaper, color: 'text-accent-foreground', tab: 'newsletter' as TabId },
     { label: 'Consultations', value: stats?.totalConsultations ?? 0, icon: CalendarClock, color: 'text-primary', tab: 'consultations' as TabId },
@@ -395,6 +404,7 @@ function PortfolioTab() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PortfolioAdmin | null>(null);
   const [formData, setFormData] = useState<Partial<CreatePortfolioInput>>({ title: '', description: '', imageUrl: '', projectUrl: '', category: '' });
+  const dispatch = useAppDispatch();
 
   const loadItems = useCallback(async () => {
     try { const data = await adminApiService.getPortfolioItems(); setItems(data); } catch { /* ignore */ } finally { setLoading(false); }
@@ -404,18 +414,31 @@ function PortfolioTab() {
 
   const handleSubmit = async () => {
     if (!formData.title || !formData.description || !formData.category) { alert('Title, description, and category are required'); return; }
-    if (editingItem) {
-      const updated = await adminApiService.updatePortfolioItem(editingItem._id, formData);
-      setItems((prev) => prev.map((i) => (i._id === editingItem._id ? updated : i)));
-    } else {
-      const created = await adminApiService.createPortfolioItem(formData as CreatePortfolioInput);
-      setItems((prev) => [created, ...prev]);
+    try {
+      if (editingItem) {
+        const updated = await adminApiService.updatePortfolioItem(editingItem._id, formData);
+        setItems((prev) => prev.map((i) => (i._id === editingItem._id ? updated : i)));
+      } else {
+        const created = await adminApiService.createPortfolioItem(formData as CreatePortfolioInput);
+        setItems((prev) => [created, ...prev]);
+      }
+      setModalOpen(false); setEditingItem(null); setFormData({ title: '', description: '', imageUrl: '', projectUrl: '', category: '' });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save portfolio item';
+      dispatch(addToast({ message, variant: 'error' }));
     }
-    setModalOpen(false); setEditingItem(null); setFormData({ title: '', description: '', imageUrl: '', projectUrl: '', category: '' });
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure?')) { await adminApiService.deletePortfolioItem(id); setItems((prev) => prev.filter((i) => i._id !== id)); }
+    if (!window.confirm('Are you sure you want to delete this portfolio item?')) return;
+    try {
+      await adminApiService.deletePortfolioItem(id);
+      setItems((prev) => prev.filter((i) => i._id !== id));
+      dispatch(addToast({ message: 'Portfolio item deleted', variant: 'success' }));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete portfolio item';
+      dispatch(addToast({ message, variant: 'error' }));
+    }
   };
 
   if (loading) return (
@@ -673,11 +696,20 @@ function AboutFounderTab() {
 function CloneWebsiteTab() {
   const [clones, setClones] = useState<CloneAdmin[]>([]);
   const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
 
   useEffect(() => { adminApiService.getClones().then((data) => setClones(data)).catch(() => {}).finally(() => setLoading(false)); }, []);
 
   const handleDelete = async (id: string) => {
-    if (confirm('Delete this clone record?')) { await adminApiService.deleteClone(id); setClones((prev) => prev.filter((c) => c._id !== id)); }
+    if (!window.confirm('Delete this clone record? This action cannot be undone.')) return;
+    try {
+      await adminApiService.deleteClone(id);
+      setClones((prev) => prev.filter((c) => c._id !== id));
+      dispatch(addToast({ message: 'Clone record deleted', variant: 'success' }));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete clone record';
+      dispatch(addToast({ message, variant: 'error' }));
+    }
   };
 
   if (loading) return (
@@ -768,6 +800,7 @@ function ThirtyDayPlanTab() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<ThirtyDayPlanAdmin | null>(null);
   const [formData, setFormData] = useState<Partial<CreateThirtyDayPlanInput>>({ dayNumber: 1, title: '', description: '', tasks: [], resources: [] });
+  const dispatch = useAppDispatch();
 
   const loadPlans = useCallback(async () => {
     try { const data = await adminApiService.getThirtyDayPlans(); setPlans(data); } catch { /* ignore */ } finally { setLoading(false); }
@@ -777,18 +810,32 @@ function ThirtyDayPlanTab() {
 
   const handleSubmit = async () => {
     if (formData.dayNumber === undefined || !formData.title || !formData.description) { alert('Day number, title, and description are required'); return; }
-    if (editingPlan) {
-      const updated = await adminApiService.updateThirtyDayPlan(editingPlan._id, formData);
-      setPlans((prev) => prev.map((p) => (p._id === editingPlan._id ? updated : p)));
-    } else {
-      const created = await adminApiService.createThirtyDayPlan(formData as CreateThirtyDayPlanInput);
-      setPlans((prev) => [...prev, created].sort((a, b) => a.dayNumber - b.dayNumber));
+    try {
+      if (editingPlan) {
+        const updated = await adminApiService.updateThirtyDayPlan(editingPlan._id, formData);
+        setPlans((prev) => prev.map((p) => (p._id === editingPlan._id ? updated : p)));
+      } else {
+        const created = await adminApiService.createThirtyDayPlan(formData as CreateThirtyDayPlanInput);
+        setPlans((prev) => [...prev, created].sort((a, b) => a.dayNumber - b.dayNumber));
+      }
+      setModalOpen(false); setEditingPlan(null); setFormData({ dayNumber: 1, title: '', description: '', tasks: [], resources: [] });
+      dispatch(addToast({ message: editingPlan ? 'Day updated' : 'Day created', variant: 'success' }));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to save plan entry';
+      dispatch(addToast({ message, variant: 'error' }));
     }
-    setModalOpen(false); setEditingPlan(null); setFormData({ dayNumber: 1, title: '', description: '', tasks: [], resources: [] });
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure?')) { await adminApiService.deleteThirtyDayPlan(id); setPlans((prev) => prev.filter((p) => p._id !== id)); }
+    if (!window.confirm('Are you sure you want to delete this plan entry?')) return;
+    try {
+      await adminApiService.deleteThirtyDayPlan(id);
+      setPlans((prev) => prev.filter((p) => p._id !== id));
+      dispatch(addToast({ message: 'Plan entry deleted', variant: 'success' }));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete plan entry';
+      dispatch(addToast({ message, variant: 'error' }));
+    }
   };
 
   if (loading) return (
@@ -940,20 +987,659 @@ function ThirtyDayPlanTab() {
   );
 }
 
-// ─── Reviews Tab (placeholder) ────────────────────────────────────────────────
+// ─── Shop Tab ──────────────────────────────────────────────────────────────
+
+interface ShopProduct {
+  id: string;
+  title: string;
+  price: number;
+  currency: string;
+  buyUrl: string;
+  salesCount: number;
+}
+
+const SHOP_PRODUCTS: ShopProduct[] = [
+  { id: 'pin-templates', title: '30 Pinterest Pin Templates for Modest Fashion Bloggers', price: 15, currency: 'USD', buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/30-pinterest-pin-templates-modest-fashion', salesCount: 0 },
+  { id: 'winter-abaya-guide', title: '22 Winter Abaya Outfits — The Complete Winter Guide', price: 10, currency: 'USD', buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/22-winter-abaya-outfits-guide', salesCount: 0 },
+  { id: 'ai-prompts', title: '50 AI Prompts for Pinterest Creators & Online Sellers', price: 15, currency: 'USD', buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/ohjnua', salesCount: 0 },
+  { id: 'content-calendar', title: 'Pinterest Content Calendar — Notion Template', price: 25, currency: 'USD', buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/ceeoa', salesCount: 0 },
+];
+
+function ShopTab() {
+  const [products, setProducts] = useState<ShopProduct[]>(SHOP_PRODUCTS);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<ShopProduct | null>(null);
+  const [formData, setFormData] = useState({ title: '', price: '', buyUrl: '' });
+
+  // Try to load from API; fall back to SHOP_PRODUCTS if empty or error
+  useEffect(() => {
+    let cancelled = false;
+    adminApiService.getProducts().then((data) => {
+      if (cancelled) return;
+      if (Array.isArray(data) && data.length > 0) {
+        setProducts(
+          data.map((p: { _id?: string; title?: string; price?: string | number; buyUrl?: string; salesCount?: number }) => ({
+            id: p._id ?? p.title ?? '',
+            title: p.title ?? '',
+            price: typeof p.price === 'string' ? parseFloat(p.price.replace(/[^0-9.]/g, '')) || 0 : (p.price ?? 0),
+            currency: 'USD',
+            buyUrl: p.buyUrl ?? '',
+            salesCount: p.salesCount ?? 0,
+          })),
+        );
+      }
+    }).catch(() => { /* keep SHOP_PRODUCTS fallback */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  const handleEdit = (product: ShopProduct) => {
+    setEditingProduct(product);
+    setFormData({
+      title: product.title,
+      price: String(product.price),
+      buyUrl: product.buyUrl,
+    });
+    setModalOpen(true);
+  };
+
+  const handleSave = () => {
+    if (!formData.title || !formData.price) {
+      alert('Title and price are required');
+      return;
+    }
+    if (!editingProduct) return;
+    const updatedProduct: ShopProduct = {
+      ...editingProduct,
+      title: formData.title,
+      price: parseFloat(formData.price) || 0,
+      buyUrl: formData.buyUrl,
+    };
+    setProducts((prev) => prev.map((p) => (p.id === editingProduct.id ? updatedProduct : p)));
+    setModalOpen(false);
+    setEditingProduct(null);
+  };
+
+  return (
+    <div className="flex flex-col gap-4" data-icod-id="admin_shop_root">
+      <div className="flex items-center justify-between" data-icod-id="admin_shop_header">
+        <h3 className="font-heading text-lg font-semibold text-foreground" data-icod-id="admin_shop_title">
+          Shop Products ({products.length})
+        </h3>
+      </div>
+
+      <Card className="overflow-hidden" data-icod-id="admin_shop_table_card">
+        <div className="overflow-x-auto" data-icod-id="admin_shop_table_wrap">
+          <table className="w-full text-left text-sm" data-icod-id="admin_shop_table">
+            <thead data-icod-id="admin_shop_thead">
+              <tr className="border-b border-border bg-muted/30" data-icod-id="admin_shop_header_row">
+                <th className="px-4 py-3 font-semibold text-foreground" data-icod-id="admin_shop_th_title">Title</th>
+                <th className="px-4 py-3 font-semibold text-foreground" data-icod-id="admin_shop_th_price">Price</th>
+                <th className="px-4 py-3 font-semibold text-foreground" data-icod-id="admin_shop_th_link">Buy link</th>
+                <th className="px-4 py-3 font-semibold text-foreground" data-icod-id="admin_shop_th_sales">Sales</th>
+                <th className="px-4 py-3 font-semibold text-foreground text-right" data-icod-id="admin_shop_th_actions"></th>
+              </tr>
+            </thead>
+            <tbody data-icod-id="admin_shop_tbody">
+              {products.map((product) => (
+                <tr
+                  key={product.id}
+                  className="border-b border-border/50 hover:bg-muted/20 transition-colors"
+                  data-icod-id={`admin_shop_row_${product.id}`}>
+                  <td className="px-4 py-3 font-medium text-foreground" data-icod-id={`admin_shop_title_${product.id}`}>
+                    {product.title}
+                  </td>
+                  <td className="px-4 py-3 text-foreground" data-icod-id={`admin_shop_price_${product.id}`}>
+                    ${product.price}
+                  </td>
+                  <td className="px-4 py-3" data-icod-id={`admin_shop_link_${product.id}`}>
+                    {product.buyUrl ? (
+                      <a
+                        href={product.buyUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-primary hover:underline text-xs"
+                        data-icod-id={`admin_shop_link_a_${product.id}`}>
+                        Buy on Gumroad
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground text-xs" data-icod-id={`admin_shop_no_link_${product.id}`}>—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground" data-icod-id={`admin_shop_sales_${product.id}`}>
+                    {product.salesCount}
+                  </td>
+                  <td className="px-4 py-3 text-right" data-icod-id={`admin_shop_actions_${product.id}`}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(product)}
+                      data-icod-id={`admin_shop_edit_btn_${product.id}`}>
+                      <Edit className="h-4 w-4" data-icod-id={`admin_shop_edit_icon_${product.id}`} />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editingProduct ? 'Edit Product' : 'Product'}
+        footer={
+          <div className="flex gap-2 justify-end" data-icod-id="admin_shop_modal_footer">
+            <Button variant="ghost" onClick={() => setModalOpen(false)} data-icod-id="admin_shop_modal_cancel">Cancel</Button>
+            <Button variant="primary" onClick={handleSave} data-icod-id="admin_shop_modal_save">Save</Button>
+          </div>
+        }
+        data-icod-id="admin_shop_modal">
+        <div className="flex flex-col gap-4" data-icod-id="admin_shop_form">
+          <Field label="Title" htmlFor="shop-title" required data-icod-id="admin_shop_field_title">
+            <Input
+              id="shop-title"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              data-icod-id="admin_shop_input_title" />
+          </Field>
+          <Field label="Price" htmlFor="shop-price" required data-icod-id="admin_shop_field_price">
+            <Input
+              id="shop-price"
+              value={formData.price}
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              data-icod-id="admin_shop_input_price" />
+          </Field>
+          <Field label="Buy Link" htmlFor="shop-link" data-icod-id="admin_shop_field_link">
+            <Input
+              id="shop-link"
+              value={formData.buyUrl}
+              onChange={(e) => setFormData({ ...formData, buyUrl: e.target.value })}
+              placeholder="https://..."
+              data-icod-id="admin_shop_input_link" />
+          </Field>
+        </div>
+      </Modal>
+    </div>
+  );
+}
+
+// ─── Reviews Tab ──────────────────────────────────────────────────────────────
 
 function ReviewsTab() {
+  const [reviews, setReviews] = useState<Review[]>(MG_REVIEWS);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [formData, setFormData] = useState<Partial<Review>>({ name: '', role: '', city: '', initials: '', photo: '', text: '' });
+
+  const handleAdd = () => {
+    setEditingIndex(null);
+    setFormData({ name: '', role: '', city: '', initials: '', photo: '', text: '' });
+    setModalOpen(true);
+  };
+
+  const handleEdit = (index: number) => {
+    const r = reviews[index];
+    setEditingIndex(index);
+    setFormData({ name: r.name, role: r.role, city: r.city, initials: r.initials, photo: r.photo, text: r.text });
+    setModalOpen(true);
+  };
+
+  const handleSave = () => {
+    if (!formData.name || !formData.role || !formData.city || !formData.text) {
+      alert('Name, role, city, and review text are required');
+      return;
+    }
+    const entry: Review = {
+      name: formData.name,
+      role: formData.role,
+      city: formData.city,
+      initials: formData.initials || formData.name.slice(0, 2),
+      photo: formData.photo || '',
+      text: formData.text,
+    };
+    if (editingIndex !== null) {
+      setReviews((prev) => prev.map((r, i) => (i === editingIndex ? entry : r)));
+    } else {
+      setReviews((prev) => [...prev, entry]);
+    }
+    setModalOpen(false);
+    setEditingIndex(null);
+    setFormData({ name: '', role: '', city: '', initials: '', photo: '', text: '' });
+  };
+
+  return (
+    <div className="flex flex-col gap-4" data-icod-id="admin_reviews_root">
+      <div className="flex items-center justify-between" data-icod-id="admin_reviews_header">
+        <h3 className="font-heading text-lg font-semibold text-foreground" data-icod-id="admin_reviews_title">
+          Reviews ({reviews.length})
+        </h3>
+        <Button variant="primary" size="sm" onClick={handleAdd} data-icod-id="admin_reviews_add_btn">
+          <Plus className="mr-2 h-4 w-4" data-icod-id="admin_reviews_add_icon" /> Add Review
+        </Button>
+      </div>
+      <Card className="overflow-hidden" data-icod-id="admin_reviews_table_card">
+        <div className="overflow-x-auto" data-icod-id="admin_reviews_table_wrap">
+          <table className="w-full text-left text-sm" data-icod-id="admin_reviews_table">
+            <thead data-icod-id="admin_reviews_thead">
+              <tr className="border-b border-border bg-muted/30" data-icod-id="admin_reviews_header_row">
+                <th className="px-4 py-3 font-semibold text-foreground" data-icod-id="admin_reviews_th_name">Name</th>
+                <th className="px-4 py-3 font-semibold text-foreground" data-icod-id="admin_reviews_th_role">Role</th>
+                <th className="px-4 py-3 font-semibold text-foreground" data-icod-id="admin_reviews_th_city">City</th>
+                <th className="px-4 py-3 font-semibold text-foreground" data-icod-id="admin_reviews_th_stars">Stars</th>
+                <th className="px-4 py-3 font-semibold text-foreground" data-icod-id="admin_reviews_th_text">Review</th>
+                <th className="px-4 py-3 font-semibold text-foreground text-right" data-icod-id="admin_reviews_th_actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody data-icod-id="admin_reviews_tbody">
+              {reviews.map((review, idx) => (
+                <tr
+                  key={`${review.name}-${idx}`}
+                  className="border-b border-border/50 hover:bg-muted/20 transition-colors"
+                  data-icod-id={`admin_reviews_row_${idx}`}>
+                  <td className="px-4 py-3 font-medium text-foreground" data-icod-id={`admin_reviews_name_${idx}`}>{review.name}</td>
+                  <td className="px-4 py-3 text-muted-foreground" data-icod-id={`admin_reviews_role_${idx}`}>{review.role}</td>
+                  <td className="px-4 py-3 text-muted-foreground" data-icod-id={`admin_reviews_city_${idx}`}>{review.city}</td>
+                  <td className="px-4 py-3" data-icod-id={`admin_reviews_stars_${idx}`}>
+                    <span
+                      className="text-warning"
+                      aria-label="5 out of 5 stars"
+                      data-icod-id={`src_pages_dashboard_adminconsole_tsx_d156_${idx}`}>&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground line-clamp-2 max-w-[350px]" data-icod-id={`admin_reviews_text_${idx}`}>{review.text}</td>
+                  <td className="px-4 py-3 text-right" data-icod-id={`admin_reviews_actions_${idx}`}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleEdit(idx)}
+                      data-icod-id={`admin_reviews_edit_btn_${idx}`}>
+                      <Edit className="h-4 w-4" data-icod-id={`admin_reviews_edit_icon_${idx}`} />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editingIndex !== null ? 'Edit Review' : 'Add Review'}
+        footer={
+          <div className="flex gap-2 justify-end" data-icod-id="admin_reviews_modal_footer">
+            <Button variant="ghost" onClick={() => setModalOpen(false)} data-icod-id="admin_reviews_modal_cancel">Cancel</Button>
+            <Button variant="primary" onClick={handleSave} data-icod-id="admin_reviews_modal_save">
+              {editingIndex !== null ? 'Update' : 'Add'}
+            </Button>
+          </div>
+        }
+        data-icod-id="admin_reviews_modal">
+        <div className="flex flex-col gap-4" data-icod-id="admin_reviews_form">
+          <Field label="Name" htmlFor="review-name" required data-icod-id="admin_reviews_field_name">
+            <Input id="review-name" value={formData.name || ''} onChange={(e) => setFormData({ ...formData, name: e.target.value })} data-icod-id="admin_reviews_input_name" />
+          </Field>
+          <Field label="Role" htmlFor="review-role" required data-icod-id="admin_reviews_field_role">
+            <Input id="review-role" value={formData.role || ''} onChange={(e) => setFormData({ ...formData, role: e.target.value })} data-icod-id="admin_reviews_input_role" />
+          </Field>
+          <Field label="City" htmlFor="review-city" required data-icod-id="admin_reviews_field_city">
+            <Input id="review-city" value={formData.city || ''} onChange={(e) => setFormData({ ...formData, city: e.target.value })} data-icod-id="admin_reviews_input_city" />
+          </Field>
+          <Field label="Initials" htmlFor="review-initials" data-icod-id="admin_reviews_field_initials">
+            <Input id="review-initials" value={formData.initials || ''} onChange={(e) => setFormData({ ...formData, initials: e.target.value })} placeholder="Auto-generated from name if empty" data-icod-id="admin_reviews_input_initials" />
+          </Field>
+          <Field label="Photo URL" htmlFor="review-photo" data-icod-id="admin_reviews_field_photo">
+            <Input id="review-photo" value={formData.photo || ''} onChange={(e) => setFormData({ ...formData, photo: e.target.value })} placeholder="https://..." data-icod-id="admin_reviews_input_photo" />
+          </Field>
+          <Field label="Review Text" htmlFor="review-text" required data-icod-id="admin_reviews_field_text">
+            <textarea
+              id="review-text"
+              className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground min-h-[100px]"
+              value={formData.text || ''}
+              onChange={(e) => setFormData({ ...formData, text: e.target.value })}
+              data-icod-id="admin_reviews_input_text" />
+          </Field>
+        </div>
+      </Modal>
+    </div>
+  );
+}
+
+// ─── Homepage Tab ─────────────────────────────────────────────────────────────
+
+interface HomepageSettingsData {
+  _id?: string;
+  hero: { headline: string; subheadline: string; imageUrl: string };
+  contentHook: { title: string; description: string; imageUrl: string };
+  journeySteps: Array<{ number: string; title: string; description: string; iconName: string }>;
+  aiReadinessPreview: { sectionTitle: string; readinessTitle: string; description: string; readinessDescription: string };
+  adSlots: Array<{ advertiserName: string; imageUrl: string; linkUrl: string; tagline: string }>;
+}
+
+function HomepageTab() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [settings, setSettings] = useState<HomepageSettingsData>({
+    hero: { headline: '', subheadline: '', imageUrl: '' },
+    contentHook: { title: '', description: '', imageUrl: '' },
+    journeySteps: [],
+    aiReadinessPreview: { sectionTitle: '', readinessTitle: '', description: '', readinessDescription: '' },
+    adSlots: [],
+  });
+
+  useEffect(() => {
+    adminApiService.getHomepageSettings().then((data) => {
+      if (data) setSettings(data);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setMessage(null);
+    try {
+      const updated = await adminApiService.updateHomepageSettings(settings as unknown as Record<string, unknown>);
+      if (updated) setSettings(updated);
+      setMessage('Homepage settings saved successfully');
+      setTimeout(() => setMessage(null), 3000);
+    } catch {
+      setMessage('Failed to save homepage settings');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const updateHero = (field: keyof HomepageSettingsData['hero'], value: string) => {
+    setSettings((prev) => ({ ...prev, hero: { ...prev.hero, [field]: value } }));
+  };
+
+  const updateContentHook = (field: keyof HomepageSettingsData['contentHook'], value: string) => {
+    setSettings((prev) => ({ ...prev, contentHook: { ...prev.contentHook, [field]: value } }));
+  };
+
+  const updateJourneyStep = (index: number, field: 'title' | 'description', value: string) => {
+    setSettings((prev) => {
+      const steps = [...prev.journeySteps];
+      steps[index] = { ...steps[index], [field]: value };
+      return { ...prev, journeySteps: steps };
+    });
+  };
+
+  const updateAIReadiness = (field: keyof HomepageSettingsData['aiReadinessPreview'], value: string) => {
+    setSettings((prev) => ({ ...prev, aiReadinessPreview: { ...prev.aiReadinessPreview, [field]: value } }));
+  };
+
+  const updateAdSlot = (index: number, field: keyof HomepageSettingsData['adSlots'][number], value: string) => {
+    setSettings((prev) => {
+      const slots = [...prev.adSlots];
+      slots[index] = { ...slots[index], [field]: value };
+      return { ...prev, adSlots: slots };
+    });
+  };
+
+  if (loading) return (
+    <div
+      className="flex justify-center py-12"
+      data-icod-id="src_pages_dashboard_adminconsole_tsx_1b83"><Spinner size="lg" data-icod-id="src_pages_dashboard_adminconsole_tsx_99f7" /></div>
+  );
+
   return (
     <div
-      className="flex flex-col gap-4"
-      data-icod-id="src_pages_dashboard_adminconsole_tsx_e5c4">
-      <h3
-        className="font-heading text-lg font-semibold text-foreground"
-        data-icod-id="src_pages_dashboard_adminconsole_tsx_934e">Reviews</h3>
-      <EmptyState
-        title="No reviews yet"
-        description="Reviews will appear here once customers submit them."
-        data-icod-id="src_pages_dashboard_adminconsole_tsx_bbd9" />
+      className="flex flex-col gap-6"
+      data-icod-id="src_pages_dashboard_adminconsole_tsx_e7fa">
+      <div
+        className="flex items-center justify-between"
+        data-icod-id="src_pages_dashboard_adminconsole_tsx_7661">
+        <h3
+          className="font-heading text-lg font-semibold text-foreground"
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_9cc5">Homepage Content Editor</h3>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={handleSave}
+          loading={saving}
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_200a">Save Changes</Button>
+      </div>
+      {message && (
+        <Alert
+          variant={message.includes('success') ? 'success' : 'error'}
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_81cc">{message}</Alert>
+      )}
+      {/* Hero Banner Section */}
+      <Card className="p-6" data-icod-id="src_pages_dashboard_adminconsole_tsx_a988">
+        <h4
+          className="font-heading text-base font-bold text-foreground mb-4 flex items-center gap-2"
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_95e3">
+          <Globe
+            className="h-4 w-4 text-primary"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_a7b9" /> Hero Banner
+        </h4>
+        <div
+          className="flex flex-col gap-4 max-w-3xl"
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_380a">
+          <Field
+            label="Headline"
+            htmlFor="hp-hero-headline"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_9255">
+            <Input
+              id="hp-hero-headline"
+              value={settings.hero.headline}
+              onChange={(e) => updateHero('headline', e.target.value)}
+              data-icod-id="src_pages_dashboard_adminconsole_tsx_9b5d" />
+          </Field>
+          <Field
+            label="Subheadline"
+            htmlFor="hp-hero-sub"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_4e02">
+            <Input
+              id="hp-hero-sub"
+              value={settings.hero.subheadline}
+              onChange={(e) => updateHero('subheadline', e.target.value)}
+              data-icod-id="src_pages_dashboard_adminconsole_tsx_780a" />
+          </Field>
+          <Field
+            label="Image URL"
+            htmlFor="hp-hero-img"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_7db3">
+            <Input
+              id="hp-hero-img"
+              value={settings.hero.imageUrl}
+              onChange={(e) => updateHero('imageUrl', e.target.value)}
+              placeholder="https://..."
+              data-icod-id="src_pages_dashboard_adminconsole_tsx_a16d" />
+          </Field>
+        </div>
+      </Card>
+      {/* Content Hook Section */}
+      <Card className="p-6" data-icod-id="src_pages_dashboard_adminconsole_tsx_61f1">
+        <h4
+          className="font-heading text-base font-bold text-foreground mb-4 flex items-center gap-2"
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_5784">
+          <Sparkles
+            className="h-4 w-4 text-primary"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_c4c9" /> Content Hook of the Moment
+        </h4>
+        <div
+          className="flex flex-col gap-4 max-w-3xl"
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_2d71">
+          <Field
+            label="Title"
+            htmlFor="hp-hook-title"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_de2e">
+            <Input
+              id="hp-hook-title"
+              value={settings.contentHook.title}
+              onChange={(e) => updateContentHook('title', e.target.value)}
+              data-icod-id="src_pages_dashboard_adminconsole_tsx_e056" />
+          </Field>
+          <Field
+            label="Description / Assistant Text"
+            htmlFor="hp-hook-desc"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_103e">
+            <textarea
+              id="hp-hook-desc"
+              className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground min-h-[80px]"
+              value={settings.contentHook.description}
+              onChange={(e) => updateContentHook('description', e.target.value)}
+              data-icod-id="src_pages_dashboard_adminconsole_tsx_a20d" />
+          </Field>
+        </div>
+      </Card>
+      {/* Business Journey Steps */}
+      <Card className="p-6" data-icod-id="src_pages_dashboard_adminconsole_tsx_e237">
+        <h4
+          className="font-heading text-base font-bold text-foreground mb-4 flex items-center gap-2"
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_a2ca">
+          <Briefcase
+            className="h-4 w-4 text-primary"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_9e38" /> Business Journey — 6 Steps
+        </h4>
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_7c1a">
+          {settings.journeySteps.map((step, idx) => (
+            <div
+              key={idx}
+              className="flex flex-col gap-2 p-3 rounded-lg border border-border/50 bg-muted/20"
+              data-icod-id={`src_pages_dashboard_adminconsole_tsx_b15a_${idx}`}>
+              <span
+                className="text-xs font-bold text-primary uppercase tracking-wider"
+                data-icod-id={`src_pages_dashboard_adminconsole_tsx_5f2f_${idx}`}>Step {step.number}</span>
+              <Field
+                label="Title"
+                htmlFor={`hp-step-title-${idx}`}
+                data-icod-id={`src_pages_dashboard_adminconsole_tsx_f97e_${idx}`}>
+                <Input
+                  id={`hp-step-title-${idx}`}
+                  value={step.title}
+                  onChange={(e) => updateJourneyStep(idx, 'title', e.target.value)}
+                  data-icod-id={`src_pages_dashboard_adminconsole_tsx_fae0_${idx}`} />
+              </Field>
+              <Field
+                label="Description"
+                htmlFor={`hp-step-desc-${idx}`}
+                data-icod-id={`src_pages_dashboard_adminconsole_tsx_329b_${idx}`}>
+                <Input
+                  id={`hp-step-desc-${idx}`}
+                  value={step.description}
+                  onChange={(e) => updateJourneyStep(idx, 'description', e.target.value)}
+                  data-icod-id={`src_pages_dashboard_adminconsole_tsx_3d05_${idx}`} />
+              </Field>
+            </div>
+          ))}
+        </div>
+      </Card>
+      {/* AI Business Readiness Preview */}
+      <Card className="p-6" data-icod-id="src_pages_dashboard_adminconsole_tsx_aedf">
+        <h4
+          className="font-heading text-base font-bold text-foreground mb-4 flex items-center gap-2"
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_57e6">
+          <Activity
+            className="h-4 w-4 text-primary"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_cde1" /> AI Business Readiness Preview
+        </h4>
+        <div
+          className="flex flex-col gap-4 max-w-3xl"
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_a50f">
+          <Field
+            label="Section Title (Toolkit Heading)"
+            htmlFor="hp-ai-title"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_117a">
+            <Input
+              id="hp-ai-title"
+              value={settings.aiReadinessPreview.sectionTitle}
+              onChange={(e) => updateAIReadiness('sectionTitle', e.target.value)}
+              data-icod-id="src_pages_dashboard_adminconsole_tsx_80f6" />
+          </Field>
+          <Field
+            label="Section Title (Readiness Preview)"
+            htmlFor="hp-ai-readiness-title"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_readiness_title">
+            <Input
+              id="hp-ai-readiness-title"
+              value={settings.aiReadinessPreview.readinessTitle}
+              onChange={(e) => updateAIReadiness('readinessTitle', e.target.value)}
+              data-icod-id="src_pages_dashboard_adminconsole_tsx_readiness_input" />
+          </Field>
+          <Field
+            label="Description"
+            htmlFor="hp-ai-desc"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_af53">
+            <textarea
+              id="hp-ai-desc"
+              className="w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground min-h-[80px]"
+              value={settings.aiReadinessPreview.readinessDescription}
+              onChange={(e) => updateAIReadiness('readinessDescription', e.target.value)}
+              data-icod-id="src_pages_dashboard_adminconsole_tsx_bbe5" />
+          </Field>
+        </div>
+      </Card>
+      {/* Sponsored Ads Carousel */}
+      <Card className="p-6" data-icod-id="src_pages_dashboard_adminconsole_tsx_5f36">
+        <h4
+          className="font-heading text-base font-bold text-foreground mb-4 flex items-center gap-2"
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_5d92">
+          <Target
+            className="h-4 w-4 text-primary"
+            data-icod-id="src_pages_dashboard_adminconsole_tsx_d0b6" /> Sponsored Ads Carousel — 5 Slots
+        </h4>
+        <div
+          className="flex flex-col gap-4"
+          data-icod-id="src_pages_dashboard_adminconsole_tsx_cc43">
+          {settings.adSlots.map((slot, idx) => (
+            <div
+              key={idx}
+              className="flex flex-col gap-2 p-3 rounded-lg border border-border/50 bg-muted/20"
+              data-icod-id={`src_pages_dashboard_adminconsole_tsx_2f08_${idx}`}>
+              <span
+                className="text-xs font-bold text-primary uppercase tracking-wider"
+                data-icod-id={`src_pages_dashboard_adminconsole_tsx_4ee1_${idx}`}>Ad Slot {idx + 1}: {slot.advertiserName || 'Untitled'}</span>
+              <Field
+                label="Advertiser Name"
+                htmlFor={`hp-ad-name-${idx}`}
+                data-icod-id={`src_pages_dashboard_adminconsole_tsx_1231_${idx}`}>
+                <Input
+                  id={`hp-ad-name-${idx}`}
+                  value={slot.advertiserName}
+                  onChange={(e) => updateAdSlot(idx, 'advertiserName', e.target.value)}
+                  data-icod-id={`src_pages_dashboard_adminconsole_tsx_2dd3_${idx}`} />
+              </Field>
+              <Field
+                label="Image URL"
+                htmlFor={`hp-ad-img-${idx}`}
+                data-icod-id={`src_pages_dashboard_adminconsole_tsx_adba_${idx}`}>
+                <Input
+                  id={`hp-ad-img-${idx}`}
+                  value={slot.imageUrl}
+                  onChange={(e) => updateAdSlot(idx, 'imageUrl', e.target.value)}
+                  placeholder="https://..."
+                  data-icod-id={`src_pages_dashboard_adminconsole_tsx_4dc5_${idx}`} />
+              </Field>
+              <Field
+                label="Link URL"
+                htmlFor={`hp-ad-link-${idx}`}
+                data-icod-id={`src_pages_dashboard_adminconsole_tsx_1fd5_${idx}`}>
+                <Input
+                  id={`hp-ad-link-${idx}`}
+                  value={slot.linkUrl}
+                  onChange={(e) => updateAdSlot(idx, 'linkUrl', e.target.value)}
+                  placeholder="https://..."
+                  data-icod-id={`src_pages_dashboard_adminconsole_tsx_bd27_${idx}`} />
+              </Field>
+              <Field
+                label="Tagline"
+                htmlFor={`hp-ad-tag-${idx}`}
+                data-icod-id={`src_pages_dashboard_adminconsole_tsx_c67d_${idx}`}>
+                <Input
+                  id={`hp-ad-tag-${idx}`}
+                  value={slot.tagline}
+                  onChange={(e) => updateAdSlot(idx, 'tagline', e.target.value)}
+                  data-icod-id={`src_pages_dashboard_adminconsole_tsx_6fb2_${idx}`} />
+              </Field>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }
@@ -2412,13 +3098,30 @@ function CoursesTab() {
                     data-icod-id={`src_pages_dashboard_adminconsole_tsx_3f00_${course._id}`}>
                     <td
                       className="px-4 py-3 font-medium text-foreground"
-                      data-icod-id={`src_pages_dashboard_adminconsole_tsx_55a8_${course._id}`}>{course.title}</td>
+                      data-icod-id={`src_pages_dashboard_adminconsole_tsx_55a8_${course._id}`}>
+                      <div
+                        className="flex items-center gap-2"
+                        data-icod-id={`src_pages_dashboard_adminconsole_tsx_d812_${course._id}`}>
+                        {course.title}
+                        {course.slug === 'ai-advance' && (
+                          <Badge variant="ai" className="text-[10px]" data-icod-id={`admin_courses_running_badge_${course._id}`}>Currently Running</Badge>
+                        )}
+                      </div>
+                    </td>
                     <td
                       className="px-4 py-3 text-muted-foreground"
                       data-icod-id={`src_pages_dashboard_adminconsole_tsx_5e6d_${course._id}`}>{course.category}</td>
                     <td
                       className="px-4 py-3 text-foreground"
-                      data-icod-id={`src_pages_dashboard_adminconsole_tsx_52c4_${course._id}`}>${course.price}</td>
+                      data-icod-id={`src_pages_dashboard_adminconsole_tsx_52c4_${course._id}`}>
+                      {course.slug === 'youtube' ? (
+                        <span
+                          className="text-xs"
+                          data-icod-id={`src_pages_dashboard_adminconsole_tsx_1653_${course._id}`}>Full course: ${course.price} | Recorded lectures: $36</span>
+                      ) : (
+                        `$${course.price}`
+                      )}
+                    </td>
                     <td
                       className="px-4 py-3 text-muted-foreground capitalize"
                       data-icod-id={`src_pages_dashboard_adminconsole_tsx_94b3_${course._id}`}>{course.level}</td>
@@ -2628,9 +3331,14 @@ function ResourcesTab() {
     }
   }, [dispatch, resourcesStatus]);
 
-  // Combine DB resources with the 4 MG guides to match the public /resources page
+  // Combine DB resources with the 4 MG guides to match the public /resources page.
+  // Filter out any DB records whose title matches an MG guide to prevent duplicates
+  // (the MG guides are rendered exclusively from the hardcoded array below).
+  const mgGuideTitles: Set<string> = new Set(MG_GUIDES_ADMIN.map((g) => g.title));
   const allResources = [
-    ...resources.map((r) => ({ ...r, _mgGuide: false as const })),
+    ...resources
+      .filter((r) => !mgGuideTitles.has(r.title))
+      .map((r) => ({ ...r, _mgGuide: false as const })),
     ...MG_GUIDES_ADMIN.map((g) => ({ ...g, _id: `mg-${g.title}`, slug: '', description: '', downloadCount: 0 })),
   ];
 

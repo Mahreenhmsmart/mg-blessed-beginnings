@@ -6,6 +6,7 @@ export interface IPortfolio extends Document {
   imageUrl: string;
   projectUrl: string;
   category: string;
+  metrics: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,6 +18,7 @@ const portfolioSchema = new Schema<IPortfolio>(
     imageUrl: { type: String, default: '' },
     projectUrl: { type: String, default: '' },
     category: { type: String, required: true, trim: true },
+    metrics: [{ type: String, trim: true }],
   },
   { timestamps: true }
 );

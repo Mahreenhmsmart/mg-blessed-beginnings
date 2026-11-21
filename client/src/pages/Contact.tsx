@@ -8,6 +8,7 @@ import AdSenseSlot from '@/components/AdSenseSlot';
 import { Send, Mail, MapPin, Phone, Linkedin, Instagram, Globe, MessageCircle, Youtube, ExternalLink } from 'lucide-react';
 import type { FAQItem } from '@/components/FAQAccordion';
 import { SchemaInjector, PAGE_META } from '@/seo';
+import { useSeo } from '@/components/Seo';
 
 const contactMeta = PAGE_META['/contact'];
 
@@ -47,6 +48,10 @@ const contactStructuredData = [
 ];
 
 export default function Contact() {
+  useSeo(
+    'Contact | MG Blessed Beginnings',
+    'Contact MG Blessed Beginnings — we reply within 24 hours.',
+  );
   const dispatch = useAppDispatch();
   const { status, error } = useAppSelector((state) => state.contact);
 

@@ -28,7 +28,9 @@ export interface IHomepageSettings extends Document {
   journeySteps: JourneyStep[];
   aiReadinessPreview: {
     sectionTitle: string;
+    readinessTitle: string;
     description: string;
+    readinessDescription: string;
   };
   adSlots: AdSlot[];
   createdAt: Date;
@@ -60,11 +62,11 @@ const homepageSettingsSchema = new Schema<IHomepageSettings>(
     hero: {
       headline: { type: String, default: 'Your AI-Powered Business Toolkit' },
       subheadline: { type: String, default: 'Free AI tools for content, marketing, SEO, eCommerce & online business.' },
-      imageUrl: { type: String, default: '' },
+      imageUrl: { type: String, default: 'https://drive.google.com/thumbnail?id=1JyOiHzGnglHR5woY1qwApIHM3PA6BxYa&sz=w1920' },
     },
     contentHook: {
-      title: { type: String, default: 'Content Hook of the Moment' },
-      description: { type: String, default: '' },
+      title: { type: String, default: 'Optimize your listing in 60 seconds ⬇️' },
+      description: { type: String, default: 'MG AI Assistant can help you generate SEO titles, product descriptions, hashtags, and marketing content — try our free AI tools today.' },
       imageUrl: { type: String, default: '' },
     },
     journeySteps: {
@@ -80,7 +82,9 @@ const homepageSettingsSchema = new Schema<IHomepageSettings>(
     },
     aiReadinessPreview: {
       sectionTitle: { type: String, default: 'AI Business Toolkit' },
+      readinessTitle: { type: String, default: 'See Your Business Potential Before You Launch' },
       description: { type: String, default: 'Free AI tools for content, marketing, SEO, eCommerce & online business.' },
+      readinessDescription: { type: String, default: 'Get an AI-powered readiness preview that shows where your business idea stands — before you invest time or money.' },
     },
     adSlots: {
       type: [adSlotSchema],

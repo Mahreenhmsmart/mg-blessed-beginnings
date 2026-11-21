@@ -1,13 +1,14 @@
 /**
- * SchemaInjector — renders JSON-LD <script> tags via Helmet based on schema type.
+ * SchemaInjector — renders JSON-LD <script> tags via direct DOM manipulation.
  *
- * Deduplication: The server-side middleware (seoMetaMiddleware.ts) injects
- * JSON-LD into the initial HTML for crawlers that don't execute JS. After
- * hydration, this component checks whether server-injected JSON-LD already
- * exists in the DOM. If it does, the client skips injection to avoid
- * duplicate <script type="application/ld+json"> blocks. React Helmet will
- * replace meta/title tags by attribute, but JSON-LD scripts have no unique
- * identifier — so we gate on presence.
+ * Uses imperative DOM writes instead of react-helmet-async to avoid Helmet's
+ * reconciliation overwriting document.title set by useSeo(). Each injected
+ * <script> is tagged with data-schema-source="client" so it can be
+ * distinguished from server-injected scripts.
+ *
+ * Deduplication: Before injecting, checks whether a <script type="application/ld+json">
+ * already exists in the DOM whose parsed JSON contains the same @type value(s).
+ * If all schema types are already present, injection is skipped entirely.
  *
  * Usage:
  *   <SchemaInjector schemaType="home" pageMeta={meta} />
@@ -16,8 +17,7 @@
  *   <SchemaInjector schemaType="page" breadcrumbs={[...]} pageMeta={meta} />
  */
 
-import { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
 import {
   organizationSchema,
   websiteSchema,
@@ -66,114 +66,152 @@ type SchemaInjectorProps =
   | { schemaType: 'page'; breadcrumbs: BreadcrumbItem[]; pageMeta?: PageMeta };
 
 /**
- * Check if server-side JSON-LD is already present in the DOM.
- * The server middleware injects a <script type="application/ld+json"> tag
- * directly into the HTML before React hydrates. If found, we skip client
- * injection to avoid duplicates.
+ * Extract all @type values from a schema object (handles both single objects
+ * and @graph arrays). Returns a Set of lowercase type strings for comparison.
  */
-function hasServerInjectedJsonLd(): boolean {
+function extractTypes(schema: Record<string, unknown>): Set<string> {
+  const types = new Set<string>();
+  if (schema['@graph'] && Array.isArray(schema['@graph'])) {
+    for (const item of schema['@graph']) {
+      if (item && typeof item === 'object' && '@type' in item) {
+        const t = (item as Record<string, unknown>)['@type'];
+        if (typeof t === 'string') types.add(t.toLowerCase());
+      }
+    }
+  } else if (typeof schema['@type'] === 'string') {
+    types.add((schema['@type'] as string).toLowerCase());
+  }
+  return types;
+}
+
+/**
+ * Check if every @type in the given schemas is already present in an existing
+ * JSON-LD script tag in the DOM. This provides deterministic dedup regardless
+ * of how the server-injected scripts were rendered.
+ */
+function allTypesAlreadyPresent(schemas: Record<string, unknown>[]): boolean {
   if (typeof document === 'undefined') return false;
-  // Server-injected scripts are direct children of <head> and NOT managed
-  // by React Helmet (they lack data-react-helmet attribute).
-  const scripts = document.querySelectorAll('head > script[type="application/ld+json"]');
-  for (const script of scripts) {
-    if (!script.hasAttribute('data-react-helmet') && !script.hasAttribute('data-icod-id')) {
-      return true;
+
+  // Collect all @type values we intend to inject
+  const neededTypes = new Set<string>();
+  for (const schema of schemas) {
+    for (const t of extractTypes(schema)) {
+      neededTypes.add(t);
     }
   }
-  return false;
+  if (neededTypes.size === 0) return false;
+
+  // Collect all @type values already in the DOM
+  const existingTypes = new Set<string>();
+  const scripts = document.querySelectorAll('head > script[type="application/ld+json"]');
+  for (const script of scripts) {
+    try {
+      const parsed = JSON.parse(script.textContent || '');
+      for (const t of extractTypes(parsed)) {
+        existingTypes.add(t);
+      }
+    } catch {
+      // Skip unparseable scripts
+    }
+  }
+
+  // All needed types must already exist for us to skip
+  for (const t of neededTypes) {
+    if (!existingTypes.has(t)) return false;
+  }
+  return true;
 }
 
 export default function SchemaInjector(props: SchemaInjectorProps) {
-  // Track whether server-injected JSON-LD exists. Check once after mount.
-  const [serverJsonLdPresent, setServerJsonLdPresent] = useState(false);
-
   useEffect(() => {
-    setServerJsonLdPresent(hasServerInjectedJsonLd());
-  }, []);
+    const schemas: Record<string, unknown>[] = [];
 
-  // If server already injected JSON-LD, skip client-side injection
-  if (serverJsonLdPresent) return null;
-
-  const schemas: Record<string, unknown>[] = [];
-
-  switch (props.schemaType) {
-    case 'home': {
-      schemas.push(organizationSchema());
-      schemas.push(websiteSchema());
-      // Also add WebPage for the homepage
-      if (props.pageMeta) {
-        schemas.push(webPageSchema({
-          title: props.pageMeta.title,
-          description: props.pageMeta.description,
-          url: props.pageMeta.canonical,
-        }));
+    switch (props.schemaType) {
+      case 'home': {
+        schemas.push(organizationSchema());
+        schemas.push(websiteSchema());
+        if (props.pageMeta) {
+          schemas.push(webPageSchema({
+            title: props.pageMeta.title,
+            description: props.pageMeta.description,
+            url: props.pageMeta.canonical,
+          }));
+        }
+        break;
       }
-      break;
+
+      case 'tool': {
+        if (props.pageMeta) {
+          schemas.push(webPageSchema({
+            title: props.pageMeta.title,
+            description: props.pageMeta.description,
+            url: props.pageMeta.canonical,
+          }));
+        }
+        schemas.push(softwareApplicationSchema(props.tool));
+        if (props.faqItems && props.faqItems.length > 0) {
+          schemas.push(faqPageSchema(props.faqItems));
+        }
+        if (props.breadcrumbs.length > 0) {
+          schemas.push(breadcrumbListSchema(props.breadcrumbs));
+        }
+        break;
+      }
+
+      case 'blogPost': {
+        if (props.pageMeta) {
+          schemas.push(webPageSchema({
+            title: props.pageMeta.title,
+            description: props.pageMeta.description,
+            url: props.pageMeta.canonical,
+          }));
+        }
+        schemas.push(blogPostingSchema(props.post));
+        if (props.breadcrumbs.length > 0) {
+          schemas.push(breadcrumbListSchema(props.breadcrumbs));
+        }
+        break;
+      }
+
+      case 'page': {
+        if (props.pageMeta) {
+          schemas.push(webPageSchema({
+            title: props.pageMeta.title,
+            description: props.pageMeta.description,
+            url: props.pageMeta.canonical,
+          }));
+        }
+        if (props.breadcrumbs.length > 0) {
+          schemas.push(breadcrumbListSchema(props.breadcrumbs));
+        }
+        break;
+      }
     }
 
-    case 'tool': {
-      // WebPage schema for the tool page
-      if (props.pageMeta) {
-        schemas.push(webPageSchema({
-          title: props.pageMeta.title,
-          description: props.pageMeta.description,
-          url: props.pageMeta.canonical,
-        }));
-      }
-      schemas.push(softwareApplicationSchema(props.tool));
-      if (props.faqItems && props.faqItems.length > 0) {
-        schemas.push(faqPageSchema(props.faqItems));
-      }
-      if (props.breadcrumbs.length > 0) {
-        schemas.push(breadcrumbListSchema(props.breadcrumbs));
-      }
-      break;
-    }
+    if (schemas.length === 0) return;
 
-    case 'blogPost': {
-      // WebPage schema for the blog post page
-      if (props.pageMeta) {
-        schemas.push(webPageSchema({
-          title: props.pageMeta.title,
-          description: props.pageMeta.description,
-          url: props.pageMeta.canonical,
-        }));
-      }
-      schemas.push(blogPostingSchema(props.post));
-      if (props.breadcrumbs.length > 0) {
-        schemas.push(breadcrumbListSchema(props.breadcrumbs));
-      }
-      break;
-    }
+    // Deterministic dedup: skip if all @type values are already in the DOM
+    if (allTypesAlreadyPresent(schemas)) return;
 
-    case 'page': {
-      // WebPage schema for generic pages
-      if (props.pageMeta) {
-        schemas.push(webPageSchema({
-          title: props.pageMeta.title,
-          description: props.pageMeta.description,
-          url: props.pageMeta.canonical,
-        }));
-      }
-      if (props.breadcrumbs.length > 0) {
-        schemas.push(breadcrumbListSchema(props.breadcrumbs));
-      }
-      break;
-    }
-  }
+    // Use @graph when multiple schemas are present on the same page
+    const jsonLd =
+      schemas.length === 1
+        ? schemas[0]
+        : { '@context': 'https://schema.org', '@graph': schemas };
 
-  if (schemas.length === 0) return null;
+    // Direct DOM manipulation — bypasses Helmet entirely so it cannot
+    // overwrite document.title or other meta tags managed by useSeo().
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.setAttribute('data-schema-source', 'client');
+    script.textContent = JSON.stringify(jsonLd);
+    document.head.appendChild(script);
 
-  // Use @graph when multiple schemas are present on the same page
-  const jsonLd =
-    schemas.length === 1
-      ? schemas[0]
-      : { '@context': 'https://schema.org', '@graph': schemas };
+    // Cleanup on unmount / re-render
+    return () => {
+      script.remove();
+    };
+  }, [props]);
 
-  return (
-    <Helmet data-icod-id="src_seo_schemainjector_tsx_dde7">
-      <script type="application/ld+json" data-icod-id="src_seo_schemainjector_tsx_e56d">{JSON.stringify(jsonLd)}</script>
-    </Helmet>
-  );
+  return null;
 }

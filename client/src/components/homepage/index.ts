@@ -13,3 +13,8 @@ export { default as FreeResources } from './FreeResources';
 export { default as ClientReviews } from './ClientReviews';
 export { default as CoursesShowcase } from './CoursesShowcase';
 export { default as MarqueeBanner } from './MarqueeBanner';
+export { default as HomepageStats } from './HomepageStats';
+export { default as ContentHookSection } from './ContentHookSection';
+export { default as WhatsAppShareSection } from './WhatsAppShareSection';
+export { default as ToolsMarquee } from './ToolsMarquee';
+export { default as LatestBlogPosts } from './LatestBlogPosts';

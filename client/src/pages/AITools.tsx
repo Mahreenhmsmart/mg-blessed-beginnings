@@ -10,6 +10,7 @@ import AdSenseSlot from '@/components/AdSenseSlot';
 import { AlertCircle, SearchX, RefreshCw, Infinity as InfinityIcon, Search } from 'lucide-react';
 import type { FAQItem } from '@/components/FAQAccordion';
 import { SchemaInjector, PAGE_META } from '@/seo';
+import { useSeo } from '@/components/Seo';
 
 const aiToolsMeta = PAGE_META['/ai-tools'];
 
@@ -34,7 +35,7 @@ const AI_TOOLS_FAQ_ITEMS: FAQItem[] = [
   },
   {
     question: 'What types of AI tools are available?',
-    answer: 'We offer 15 AI-powered tools across categories like content creation, SEO optimization, social media marketing, e-commerce management, and branding assistance.',
+    answer: 'We offer 14 AI-powered tools across categories like content creation, SEO optimization, social media marketing, e-commerce management, and branding assistance.',
   },
   {
     question: 'Do I need an account to use the AI tools?',
@@ -54,7 +55,7 @@ const aiToolsStructuredData = [
   {
     '@type': 'CollectionPage',
     name: 'Free AI Tools — MG Blessed Beginnings',
-    description: '15 free AI-powered tools for e-commerce sellers including hashtag generator, product descriptions, SEO optimizer, competitor analyzer, and more.',
+    description: '14 free AI-powered tools for e-commerce sellers including hashtag generator, product descriptions, SEO optimizer, competitor analyzer, and more.',
   },
   {
     '@type': 'FAQPage',
@@ -67,6 +68,10 @@ const aiToolsStructuredData = [
 ];
 
 export default function AITools() {
+  useSeo(
+    'AI Tools | MG Blessed Beginnings',
+    'Browse all 14 free AI tools for online sellers — no sign-up, no credit card, free forever.',
+  );
   const dispatch = useAppDispatch();
   const { items: tools, categories: apiCategories, status, error } = useAppSelector((state) => state.aiTools);
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);

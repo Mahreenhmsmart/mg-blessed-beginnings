@@ -19,7 +19,7 @@ const TOOL_IMAGES: Record<string, string> = {
   'Hashtag Generator': 'https://drive.google.com/thumbnail?id=1P6W8B1M3bEt2LigfVrikZ-CDsxGmmscu&sz=w1920',
   'Keyword Research Tool': 'https://drive.google.com/thumbnail?id=1Mev8FX2cDFOEqLqdZWwHCByMh1k1Q-Mc&sz=w1920',
   'Listing Health Score': 'https://drive.google.com/thumbnail?id=1veq-WanQstJU0P39P4f1kdDm2lxIv-38&sz=w1920',
-  'Listing Optimizer': 'https://drive.google.com/thumbnail?id=1XP4sOhfZkVaa4zRV0JjqVU2_Ktcz7pmz&sz=w1920',
+  'Listing Optimizer': 'https://drive.google.com/thumbnail?id=1XP4sOhfZkVaa4zRV0JrqVU2_Ktcz7pmz&sz=w1920',
   'Product Description Generator': 'https://drive.google.com/thumbnail?id=1DHnaw_YJmaeC_a86sb_ohySPA_T4b6Lb&sz=w1920',
   'Profit Calculator': 'https://drive.google.com/thumbnail?id=1daUTE2rgq9C7lJMJLtsaEDCXyOD_ruxw&sz=w1920',
   'Prompt Library': 'https://drive.google.com/thumbnail?id=1oixTHNGN2srEKnnvljWkCC7nZ1bbUIUL&sz=w1920',
@@ -28,6 +28,10 @@ const TOOL_IMAGES: Record<string, string> = {
   'SEO Title Optimizer': 'https://drive.google.com/thumbnail?id=1ceEltnnVCMfWWQJ8wzK2U0sDNQuSHHeM&sz=w1920',
   'Social Media Studio': 'https://drive.google.com/thumbnail?id=1b7ty8OcuLoM8iqJSSWg1kPjtjN9Vnb1V&sz=w1920',
   'WhatsApp Business Generator': 'https://drive.google.com/thumbnail?id=148g0RO9938gD__bxYf97cBrrPNcU3ucs&sz=w1920',
+  'Bulk Listing Generator': 'https://drive.google.com/thumbnail?id=1DzTwiHnzWbhLcQcuK_xNuYonu1-5Jb0U&sz=w1920',
+  'Product Research Assistant': 'https://drive.google.com/thumbnail?id=1Pcy-evjNJYgvXPCs0zwpii9AAQFTt9g2&sz=w1920',
+  'Store Audit': 'https://drive.google.com/thumbnail?id=15aHY-OjQj5Lwyz7eX4flWRXCWK3F48AK&sz=w1920',
+  'Free AI Tokens Hub': 'https://drive.google.com/thumbnail?id=1KOV_j24L2YFMiIMxgFUf1csCygp0SHc2&sz=w1920',
 };
 
 const statusConfig: Record<string, { label: string; className: string }> = {
@@ -61,17 +65,12 @@ export default function AIToolCard({ tool, className }: AIToolCardProps) {
       data-icod-id="src_components_aitoolcard_tsx_4b2a">
       {/* Full-width thumbnail image */}
       {imageUrl && (
-        <div
-          className="w-full shrink-0 overflow-hidden"
-          style={{ height: '140px', borderRadius: '22px 22px 0 0' }}
-          data-icod-id="src_components_aitoolcard_tsx_image_wrap">
-          <img
-            src={imageUrl}
-            alt={tool.name}
-            className="h-full w-full object-cover"
-            loading="lazy"
-            data-icod-id="src_components_aitoolcard_tsx_image" />
-        </div>
+        <img
+          className="tool-image"
+          src={imageUrl}
+          alt={tool.name}
+          loading="lazy"
+          data-icod-id="src_components_aitoolcard_tsx_image" />
       )}
       {/* Content area */}
       <div

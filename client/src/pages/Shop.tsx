@@ -2,37 +2,47 @@ import { Button, Card } from '@/components/ui';
 import { cn } from '@/utils/cn';
 import LocalPaymentMethods from '@/components/LocalPaymentMethods';
 import { ShoppingBag, ExternalLink } from 'lucide-react';
+import { useSeo } from '@/components/Seo';
 
 interface ShopProduct {
   title: string;
   price: string;
   buyUrl: string;
+  image: string;
 }
 
 const SHOP_PRODUCTS: ShopProduct[] = [
   {
     title: 'Pinterest Pin Template Pack',
     price: '$15',
-    buyUrl: 'https://mgblessedbeginnings.gumroad.com/',
+    buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/30-pinterest-pin-templates-modest-fashion',
+    image: 'https://drive.google.com/thumbnail?id=188kqlpsv7tzvnmc-tU3pYzveCyTnKVze&sz=w1920',
   },
   {
     title: 'Winter Abaya Guide',
     price: '$10',
-    buyUrl: 'https://mgblessedbeginnings.gumroad.com/',
+    buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/22-winter-abaya-outfits-guide',
+    image: 'https://drive.google.com/thumbnail?id=17lRNiPnyFVrcnRz3QIxTX8RO_LkDVJ93&sz=w1920',
   },
   {
     title: '50 AI Prompts for Pinterest Creators',
     price: '$15',
     buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/ohjnua',
+    image: 'https://drive.google.com/thumbnail?id=1K07-82tKDCpSoRyAqSBiPTo8ipwAwvT8&sz=w1920',
   },
   {
     title: 'Pinterest Content Calendar — Notion Template',
     price: '$25',
-    buyUrl: 'https://mgblessedbeginnings.gumroad.com/',
+    buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/ceeoa',
+    image: 'https://drive.google.com/thumbnail?id=1hyXFciYsQUiiG3HDa20-zGVbOjvXyhqh&sz=w1920',
   },
 ];
 
 export default function Shop() {
+  useSeo(
+    'Shop | MG Blessed Beginnings',
+    'Digital products for online sellers — Pinterest templates, abaya guide, AI prompts and content calendar.',
+  );
   return (
     <div
       className="min-h-screen bg-background"
@@ -97,6 +107,12 @@ export default function Shop() {
                 hoverLift={false}
                 className="flex flex-col overflow-hidden border-border/80 shadow-[0_8px_32px_rgba(var(--primary),0.1)]"
                 data-icod-id={`src_pages_shop_tsx_09b7_${product.title}`}>
+                <img
+                  className="shop-image"
+                  src={product.image}
+                  alt={product.title}
+                  loading="lazy"
+                  data-icod-id={`src_pages_shop_tsx_9daf_${product.title}`} />
                 <div
                   className="flex flex-col flex-1 p-6 md:p-8"
                   data-icod-id={`src_pages_shop_tsx_833a_${product.title}`}>

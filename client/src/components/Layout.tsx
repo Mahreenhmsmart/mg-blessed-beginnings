@@ -3,12 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button, ToastContainer } from '@/components/ui';
 import { Menu, X, Sparkles, Zap, ArrowRight, Mail, Linkedin, Instagram, MessageCircle, Youtube, ExternalLink, ChevronDown, TrendingUp, Globe, Search, Copy, Megaphone, Briefcase, Gift, Info, BrainCircuit, Lock, LifeBuoy } from 'lucide-react';
 import PWAPrompt from './PWAPrompt';
+import InstallButton from './InstallButton';
 import MobileBottomNav from './MobileBottomNav';
 import ChatBot from './ChatBot';
 import WhatsAppButton from './WhatsAppButton';
 import CookieConsent from './CookieConsent';
 import BackToTop from './BackToTop';
 import ConnectionBanner from './ConnectionBanner';
+import MarqueeBanner from './homepage/MarqueeBanner';
 import { cn } from '@/utils/cn';
 import { useAppSelector } from '@/store/hooks';
 import { prefetchPage } from '@/utils/prefetchPage';
@@ -49,6 +51,7 @@ function PageContentFadeIn({ children }: { children: React.ReactNode }) {
         .animate-more-dropdown-in {
           animation: more-dropdown-in 0.15s ease-out both;
         }
+        .mg-logo { height: 48px; width: auto; display: block; }
       `}</style>
     </div>
   );
@@ -190,6 +193,8 @@ export default function Layout({ children }: LayoutProps) {
             : 'bg-background border-transparent'
         )}
         data-icod-id="src_components_layout_tsx_c825">
+        {/* Top marquee strip — above the nav bar */}
+        <MarqueeBanner data-icod-id="src_components_layout_tsx_fa16" />
         <div
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
           data-icod-id="src_components_layout_tsx_67ee">
@@ -204,9 +209,9 @@ export default function Layout({ children }: LayoutProps) {
               aria-label="MG Blessed Beginnings - Home"
               data-icod-id="src_components_layout_tsx_0e2f">
               <img
-                src="https://drive.google.com/thumbnail?id=17_eHHL7Lgz4XxCm2NlcyhqW4PLEFUTxr&sz=w1920"
+                className="mg-logo"
+                src="/assets/1795177902729_mg-logo-new-transparent-upload.webp"
                 alt="MG Blessed Beginnings"
-                className="h-10 md:h-12 w-auto flex-shrink-0 transition-transform duration-300 group-hover:scale-105 object-contain mr-1"
                 data-icod-id="src_components_layout_tsx_logo_img" />
               <div className="flex flex-col leading-none gap-0 flex-shrink-0 hidden sm:flex min-w-0" data-icod-id="src_components_layout_tsx_brand_text">
                 <span className="text-base md:text-lg font-extrabold tracking-tight whitespace-nowrap text-foreground truncate" data-icod-id="src_components_layout_tsx_5a0c_mg">
@@ -349,6 +354,9 @@ export default function Layout({ children }: LayoutProps) {
               className="flex items-center gap-3 flex-shrink-0"
               data-icod-id="src_components_layout_tsx_bcc7">
               
+              {/* PWA Install Button — Desktop */}
+              <InstallButton variant="header" data-icod-id="src_components_layout_tsx_install_btn_header" />
+
               {/* Desktop CTA Button — Purple-to-teal gradient pill */}
               <Link
                 to="/book-consultation"
@@ -571,9 +579,9 @@ export default function Layout({ children }: LayoutProps) {
                 className="flex items-center gap-2.5 font-bold text-lg mb-5 font-heading group"
                 data-icod-id="src_components_layout_tsx_2e74">
                 <img
-                  src="https://drive.google.com/thumbnail?id=17_eHHL7Lgz4XxCm2NlcyhqW4PLEFUTxr&sz=w1920"
+                  className="mg-logo"
+                  src="/assets/1795177902729_mg-logo-new-transparent-upload.webp"
                   alt="MG Blessed Beginnings"
-                  className="h-12 md:h-14 w-auto flex-shrink-0 transition-transform duration-[400ms] group-hover:scale-105 object-contain mr-1"
                   data-icod-id="src_components_layout_tsx_footer_logo_img" />
                 <div className="flex flex-col leading-none" data-icod-id="src_components_layout_tsx_footer_brand_text">
                   <span className="text-xl font-extrabold tracking-tight whitespace-nowrap text-primary" data-icod-id="src_components_layout_tsx_8e6f_mg">
@@ -823,6 +831,11 @@ export default function Layout({ children }: LayoutProps) {
                     data-icod-id="src_components_layout_tsx_18f0" />
                 </button>
               </Link>
+
+              {/* PWA Install Button — Footer */}
+              <div className="mt-3" data-icod-id="src_components_layout_tsx_install_btn_footer_wrap">
+                <InstallButton variant="footer" data-icod-id="src_components_layout_tsx_install_btn_footer" />
+              </div>
             </div>
           </div>
 
@@ -846,6 +859,10 @@ export default function Layout({ children }: LayoutProps) {
                 to="/cookie-policy"
                 className="transition-colors duration-200 text-muted-foreground hover:text-primary"
                 data-icod-id="src_components_layout_tsx_3a89">Cookie Policy</Link>
+              <Link
+                to="/login"
+                className="transition-colors duration-200 text-muted-foreground hover:text-primary"
+                data-icod-id="src_components_layout_tsx_admin_login_link">Admin</Link>
               <Link
                 to="/dashboard"
                 aria-label="Admin Dashboard"

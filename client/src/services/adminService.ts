@@ -531,6 +531,18 @@ export const adminApiService = {
     await apiClient.delete(`/admin-console/thirtydayplan/${id}`);
   },
 
+  // ─── Shop Products ──────────────────────────────────────────────────────────────
+
+  async getProducts(): Promise<any[]> {
+    const response = await apiClient.get<ApiResponse<any[]>>('/admin-console/products');
+    return response.data.data!;
+  },
+
+  async updateProduct(id: string, data: Partial<{ title: string; price: string; buyUrl: string; description: string; image: string; category: string }>): Promise<any> {
+    const response = await apiClient.put<ApiResponse<any>>(`/admin-console/products/${id}`, data);
+    return response.data.data!;
+  },
+
   // ─── Contact Messages ─────────────────────────────────────────────────────────
 
   async getContactMessages(): Promise<ContactMessageAdmin[]> {
@@ -540,5 +552,17 @@ export const adminApiService = {
 
   async deleteContactMessage(id: string): Promise<void> {
     await apiClient.delete(`/admin-console/contact-messages/${id}`);
+  },
+
+  // ─── Homepage Settings ──────────────────────────────────────────────────────
+
+  async getHomepageSettings(): Promise<any> {
+    const response = await apiClient.get<ApiResponse<any>>('/admin-console/homepage-settings');
+    return response.data.data!;
+  },
+
+  async updateHomepageSettings(data: Record<string, unknown>): Promise<any> {
+    const response = await apiClient.put<ApiResponse<any>>('/admin-console/homepage-settings', data);
+    return response.data.data!;
   },
 };

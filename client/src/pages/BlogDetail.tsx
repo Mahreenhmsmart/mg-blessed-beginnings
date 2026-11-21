@@ -151,7 +151,7 @@ export default function BlogDetail() {
       name: 'MG Blessed Beginnings',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://mgblessed.icod.ai/assets/mg-logo.svg',
+        url: '/assets/1795177902729_mg-logo-new-transparent-upload.webp',
       },
     },
     datePublished: currentPost.publishedAt ?? currentPost.createdAt ?? '',

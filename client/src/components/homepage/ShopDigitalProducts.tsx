@@ -14,6 +14,7 @@ interface DigitalProduct {
   description: string;
   price: string;
   buyUrl: string;
+  image: string;
 }
 
 const PRODUCTS: DigitalProduct[] = [
@@ -22,14 +23,16 @@ const PRODUCTS: DigitalProduct[] = [
     description:
       'Ready-to-use Pinterest pin templates designed for content creators and bloggers. Instant download.',
     price: '$15',
-    buyUrl: 'https://mgblessedbeginnings.gumroad.com/',
+    buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/30-pinterest-pin-templates-modest-fashion',
+    image: 'https://drive.google.com/thumbnail?id=188kqlpsv7tzvnmc-tU3pYzveCyTnKVze&sz=w1920',
   },
   {
     title: 'Winter Abaya Guide',
     description:
       'A comprehensive guide to styling winter abayas with modest fashion tips, layering ideas, and outfit inspiration.',
     price: '$10',
-    buyUrl: 'https://mgblessedbeginnings.gumroad.com/',
+    buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/22-winter-abaya-outfits-guide',
+    image: 'https://drive.google.com/thumbnail?id=17lRNiPnyFVrcnRz3QIxTX8RO_LkDVJ93&sz=w1920',
   },
   {
     title: '50 AI Prompts for Pinterest Creators',
@@ -37,13 +40,15 @@ const PRODUCTS: DigitalProduct[] = [
       '50 carefully crafted AI prompts to help Pinterest creators generate pin ideas, descriptions, and content strategies faster.',
     price: '$15',
     buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/ohjnua',
+    image: 'https://drive.google.com/thumbnail?id=1K07-82tKDCpSoRyAqSBiPTo8ipwAwvT8&sz=w1920',
   },
   {
     title: 'Pinterest Content Calendar — Notion Template',
     description:
       'A fully organized Notion template for planning and scheduling your Pinterest content strategy. Stay consistent and grow your audience.',
     price: '$25',
-    buyUrl: 'https://mgblessedbeginnings.gumroad.com/',
+    buyUrl: 'https://mgblessedbeginnings.gumroad.com/l/ceeoa',
+    image: 'https://drive.google.com/thumbnail?id=1hyXFciYsQUiiG3HDa20-zGVbOjvXyhqh&sz=w1920',
   },
 ];
 
@@ -65,7 +70,6 @@ export default function ShopDigitalProducts({ className }: ShopDigitalProductsPr
         style={{ background: 'radial-gradient(circle, rgb(var(--accent)) 0%, transparent 70%)' }}
         aria-hidden="true"
         data-icod-id="src_components_homepage_shopdigitalproducts_tsx_glow_right" />
-
       <div
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
         data-icod-id="src_components_homepage_shopdigitalproducts_tsx_container">
@@ -114,6 +118,12 @@ export default function ShopDigitalProducts({ className }: ShopDigitalProductsPr
               hoverLift={false}
               className="flex flex-col overflow-hidden border-border/80 shadow-[0_8px_32px_rgba(var(--primary),0.1)]"
               data-icod-id={`src_components_homepage_shopdigitalproducts_tsx_card_${product.title}`}>
+              <img
+                className="shop-image"
+                src={product.image}
+                alt={product.title}
+                loading="lazy"
+                data-icod-id={`src_components_homepage_shopdigitalproducts_tsx_63fa_${product.title}`} />
               <div
                 className="flex flex-col flex-1 p-6 md:p-8"
                 data-icod-id={`src_components_homepage_shopdigitalproducts_tsx_content_${product.title}`}>
@@ -184,7 +194,6 @@ export default function ShopDigitalProducts({ className }: ShopDigitalProductsPr
           </Link>
         </div>
       </div>
-
       {/* Local Payment Methods — How to Pay */}
       <LocalPaymentMethods data-icod-id="src_components_homepage_shopdigitalproducts_tsx_payment_methods" />
     </section>

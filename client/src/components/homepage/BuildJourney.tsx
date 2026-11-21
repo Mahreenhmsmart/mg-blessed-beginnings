@@ -35,7 +35,7 @@ function LazyVideoIframe({ src, title }: { src: string; title: string }) {
           <iframe
             src={src}
             title={title}
-            allow="autoplay; encrypted-media"
+            allow="autoplay; fullscreen"
             allowFullScreen
             frameBorder="0"
             loading="lazy"

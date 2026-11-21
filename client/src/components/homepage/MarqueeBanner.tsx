@@ -1,36 +1,38 @@
-import { cn } from '@/utils/cn';
+import React from 'react';
 
-const MARQUEE_IMAGE = 'https://drive.google.com/thumbnail?id=17_eHHL7Lgz4XxCm2NlcyhqW4PLEFUTxr&sz=w1920';
+const MARQUEE_LINES = [
+  '14 FREE AI TOOLS',
+  'NO SIGN-UP',
+  'NO CREDIT CARD',
+  'UNLIMITED USE',
+  'FREE FOREVER',
+  'GROW YOUR ONLINE BUSINESS WITH AI',
+  'SELL SMARTER WITH AI',
+  '500+ HAPPY SELLERS',
+];
 
-interface MarqueeBannerProps {
-  className?: string;
-}
-
-export default function MarqueeBanner({ className }: MarqueeBannerProps) {
+export default function MarqueeBanner() {
+  // The list is written TWICE so the scroll loops seamlessly with no gap.
+  const items = [...MARQUEE_LINES, ...MARQUEE_LINES];
   return (
     <div
-      className={cn('relative w-full overflow-hidden bg-background', className)}
-      aria-hidden="true"
-      data-icod-id="src_components_homepage_marqueebanner_tsx_553a">
+      className="mg-marquee"
+      aria-label="MG Blessed Beginnings highlights"
+      data-icod-id="src_components_homepage_marqueebanner_tsx_8bce">
       <div
-        className="flex w-max animate-marquee-scroll will-change-[transform]"
-        data-icod-id="src_components_homepage_marqueebanner_tsx_8995">
-        {/* First copy */}
-        <img
-          src={MARQUEE_IMAGE}
-          alt=""
-          className="h-[48px] sm:h-[60px] md:h-[72px] w-auto shrink-0 object-cover"
-          loading="lazy"
-          draggable={false}
-          data-icod-id="src_components_homepage_marqueebanner_tsx_089a" />
-        {/* Duplicate for seamless loop */}
-        <img
-          src={MARQUEE_IMAGE}
-          alt=""
-          className="h-[48px] sm:h-[60px] md:h-[72px] w-auto shrink-0 object-cover"
-          loading="lazy"
-          draggable={false}
-          data-icod-id="src_components_homepage_marqueebanner_tsx_77fd" />
+        className="mg-marquee-track"
+        data-icod-id="src_components_homepage_marqueebanner_tsx_1fad">
+        {items.map((line, i) => (
+          <span
+            key={i}
+            className="mg-marquee-item"
+            data-icod-id={`src_components_homepage_marqueebanner_tsx_545a_${i}`}>
+            {line}
+            <span
+              className="mg-marquee-star"
+              data-icod-id={`src_components_homepage_marqueebanner_tsx_cc01_${i}`}>✦</span>
+          </span>
+        ))}
       </div>
     </div>
   );

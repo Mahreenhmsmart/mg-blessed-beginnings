@@ -1,6 +1,9 @@
 import type { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
+import path from 'path';
 import { cloneWebsite, listClones, getCloneById, getCloneFilePath, type CloneOptions } from '../services/clonerService';
+
+const CLONE_DIR = path.join(process.cwd(), 'uploads', 'clones');
 
 /**
  * Configuration for the cloner controller.

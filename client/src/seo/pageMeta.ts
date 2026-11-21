@@ -26,7 +26,7 @@ export const PAGE_META: Record<string, PageMeta> = {
   '/ai-tools': {
     title: 'Free AI Tools — MG Blessed Beginnings',
     description:
-      '15 free AI-powered tools: hashtag generator, product descriptions, SEO optimizer, competitor analyzer, and more.',
+      '14 free AI-powered tools: hashtag generator, product descriptions, SEO optimizer, competitor analyzer, and more.',
     keywords:
       'ai tools, product description generator, seo optimizer, ecommerce tools, free ai tools, ecommerce sellers',
     canonical: '/ai-tools',

@@ -2,14 +2,11 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { fetchAITools } from '@/store/slices/aiToolsSlice';
-import { fetchPosts } from '@/store/slices/blogSlice';
 import SEOHead from '@/components/SEOHead';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import LocalPaymentMethods from '@/components/LocalPaymentMethods';
-import { Button, Spinner } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { Rocket, ArrowRight } from 'lucide-react';
 import NewsletterSignup from '@/components/NewsletterSignup';
-import BlogCard from '@/components/BlogCard';
 import {
   HomepageHero,
   PromoVideo,
@@ -25,37 +22,30 @@ import {
   FreeResources,
   ClientReviews,
   CoursesShowcase,
-  MarqueeBanner,
+  HomepageStats,
+  ContentHookSection,
+  WhatsAppShareSection,
+  ToolsMarquee,
+  LatestBlogPosts,
 } from '@/components/homepage';
 import { PAGE_META, SchemaInjector } from '@/seo';
+import { useSeo } from '@/components/Seo';
 
 const homeMeta = PAGE_META['/'];
 
 export default function Home() {
+  useSeo(
+    'MG Blessed Beginnings — 14 Free AI Tools for Online Sellers',
+    '14 free AI tools for online sellers — product descriptions, SEO titles, hashtags, profit calculator and more. No sign-up, no credit card, free forever.',
+  );
   const dispatch = useAppDispatch();
   const { items: aiTools, status: aiToolsStatus } = useAppSelector((state) => state.aiTools);
-  const { posts: blogPosts, status: blogStatus } = useAppSelector((state) => state.blog);
 
   useEffect(() => {
     if (aiToolsStatus === 'idle') {
       dispatch(fetchAITools());
     }
   }, [dispatch, aiToolsStatus]);
-
-  useEffect(() => {
-    if (blogStatus === 'idle') {
-      dispatch(fetchPosts());
-    }
-  }, [dispatch, blogStatus]);
-
-  // Sort by date (newest first) and take top 3
-  const latestPosts = [...blogPosts]
-    .sort((a, b) => {
-      const dateA = new Date(a.publishedAt ?? a.createdAt ?? 0).getTime();
-      const dateB = new Date(b.publishedAt ?? b.createdAt ?? 0).getTime();
-      return dateB - dateA;
-    })
-    .slice(0, 3);
 
   return (
     <>
@@ -70,8 +60,18 @@ export default function Home() {
       <ErrorBoundary data-icod-id="src_pages_home_tsx_aeda">
         <HomepageHero data-icod-id="src_pages_home_tsx_50ec" />
       </ErrorBoundary>
-      {/* Marquee Banner Strip — below hero slider */}
-      <MarqueeBanner data-icod-id="src_pages_home_tsx_b70f" />
+      {/* Content Hook of the Moment — above ticker slider */}
+      <ErrorBoundary data-icod-id="src_pages_home_tsx_content_hook_boundary">
+        <ContentHookSection data-icod-id="src_pages_home_tsx_870f" />
+      </ErrorBoundary>
+      {/* WhatsApp Share — above ticker slider */}
+      <ErrorBoundary data-icod-id="src_pages_home_tsx_whatsapp_share_boundary">
+        <WhatsAppShareSection data-icod-id="src_pages_home_tsx_66a1" />
+      </ErrorBoundary>
+      {/* Tools Marquee Strip — 14 tool names, directly above stat cards */}
+      <ToolsMarquee data-icod-id="src_pages_home_tsx_tools_marquee" />
+      {/* Animated Stat Cards — below tools marquee */}
+      <HomepageStats data-icod-id="src_pages_home_tsx_stats_section" />
       {/* Section 2.5: Promo Video */}
       <ErrorBoundary data-icod-id="src_pages_home_tsx_promo_video_boundary">
         <PromoVideo data-icod-id="src_pages_home_tsx_promo_video" />
@@ -101,10 +101,6 @@ export default function Home() {
       <ErrorBoundary data-icod-id="src_pages_home_tsx_courses_showcase_boundary">
         <CoursesShowcase data-icod-id="src_pages_home_tsx_courses_showcase" />
       </ErrorBoundary>
-      {/* Section 4.06: Local Payment Methods - below digital products */}
-      <ErrorBoundary data-icod-id="src_pages_home_tsx_local_payment_boundary">
-        <LocalPaymentMethods data-icod-id="src_pages_home_tsx_local_payment_methods" />
-      </ErrorBoundary>
       {/* Section 4.1: App Screenshots Showcase */}
       <ErrorBoundary data-icod-id="src_pages_home_tsx_screenshots_boundary">
         <AppScreenshots data-icod-id="src_pages_home_tsx_screenshots" />
@@ -118,48 +114,7 @@ export default function Home() {
         <ClientReviews data-icod-id="src_pages_home_tsx_client_reviews" />
       </ErrorBoundary>
       {/* Section 4.56: From the Blog */}
-      <section className="py-20 bg-muted/30" data-icod-id="src_pages_home_tsx_from_blog_section">
-        <div
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-          data-icod-id="src_pages_home_tsx_eb73">
-          <div className="text-center mb-12" data-icod-id="src_pages_home_tsx_02a7">
-            <h2
-              className="text-3xl md:text-4xl font-bold text-foreground font-heading mb-4"
-              data-icod-id="src_pages_home_tsx_f619">
-              From the Blog
-            </h2>
-            <p
-              className="text-muted-foreground text-lg max-w-2xl mx-auto"
-              data-icod-id="src_pages_home_tsx_2696">
-              Insights, strategies, and tips to grow your business online.
-            </p>
-          </div>
-          {blogStatus === 'loading' ? (
-            <div
-              className="flex justify-center py-12"
-              data-icod-id="src_pages_home_tsx_f151">
-              <Spinner size="lg" data-icod-id="src_pages_home_tsx_d688" />
-            </div>
-          ) : latestPosts.length > 0 ? (
-            <div
-              className="grid grid-cols-1 md:grid-cols-3 gap-8"
-              data-icod-id="src_pages_home_tsx_4b3c">
-              {latestPosts.map((post, __icodIdx0) => (<BlogCard
-                key={post._id ?? post.id}
-                post={post}
-                data-icod-id={`src_pages_home_tsx_44d0_${__icodIdx0}`} />))}
-            </div>
-          ) : null}
-          <div className="text-center mt-10" data-icod-id="src_pages_home_tsx_8d27">
-            <Link
-              to="/blog"
-              className="inline-flex items-center text-base font-bold text-primary hover:text-primary-hover hover:underline underline-offset-4 transition-all duration-[400ms]"
-              data-icod-id="src_pages_home_tsx_8f8e">
-              View all articles <ArrowRight className="h-4 w-4 ml-1.5" data-icod-id="src_pages_home_tsx_1fd2" />
-            </Link>
-          </div>
-        </div>
-      </section>
+      <LatestBlogPosts data-icod-id="src_pages_home_tsx_2aff" />
       {/* Section 4.565: Follow Us on Pinterest */}
       <section className="py-16 bg-background" data-icod-id="src_pages_home_tsx_pinterest_section">
         <div

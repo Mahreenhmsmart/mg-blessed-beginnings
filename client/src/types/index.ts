@@ -852,6 +852,7 @@ export interface PortfolioAdmin {
   imageUrl: string;
   projectUrl: string;
   category: string;
+  metrics: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -862,6 +863,7 @@ export interface CreatePortfolioInput {
   imageUrl?: string;
   projectUrl?: string;
   category: string;
+  metrics?: string[];
 }
 
 // ─── Founder Admin Types ────────────────────────────────────────────────────────
@@ -898,6 +900,7 @@ export interface CloneAdmin {
   source: string;
   bytes: number;
   filePath: string;
+  status?: 'SAVED' | 'FILE_MISSING';
   createdAt: string;
 }
 
@@ -910,6 +913,10 @@ export interface ThirtyDayPlanAdmin {
   description: string;
   tasks: string[];
   resources: string[];
+  phase: string;
+  icon: string;
+  tip: string;
+  category: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -920,6 +927,10 @@ export interface CreateThirtyDayPlanInput {
   description: string;
   tasks?: string[];
   resources?: string[];
+  phase?: string;
+  icon?: string;
+  tip?: string;
+  category?: string;
 }
 
 // ─── Contact Message Admin Types ────────────────────────────────────────────────
@@ -932,4 +943,28 @@ export interface ContactMessageAdmin {
   message: string;
   createdAt: string;
   updatedAt: string;
+}
+
+// ─── Product Admin Types ────────────────────────────────────────────────────────
+
+export interface ProductAdmin {
+  _id: string;
+  title: string;
+  price: string;
+  description: string;
+  image: string;
+  category: string;
+  purchaseLink: string;
+  salesCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateProductInput {
+  title: string;
+  price: string;
+  description?: string;
+  image?: string;
+  category?: string;
+  purchaseLink?: string;
 }

@@ -9,22 +9,10 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "https://drive.google.com/thumbnail?id=17_eHHL7Lgz4XxCm2NlcyhqW4PLEFUTxr&sz=w1920",
-      "sizes": "192x192",
-      "type": "image/png",
+      "src": "/assets/1795177902729_mg-logo-new-transparent-upload.webp",
+      "sizes": "939x857",
+      "type": "image/webp",
       "purpose": "any"
-    },
-    {
-      "src": "https://drive.google.com/thumbnail?id=17_eHHL7Lgz4XxCm2NlcyhqW4PLEFUTxr&sz=w1920",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
     }
   ],
   "categories": ["business", "productivity"],
